@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -44,8 +46,10 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable("categoryId") UUID categoryId) {
-        categoryService.deleteCategory(categoryId);
+    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable("categoryId") UUID categoryId,
+                                                      @AuthenticationPrincipal UserDetails userDetails)
+    {
+        categoryService.deleteCategory(categoryId, userDetails.getUserId());
         return ResponseEntity.ok(new ResponseDto(200, "카테고리 삭제 성공"));
     }
 }

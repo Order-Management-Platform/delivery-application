@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 @Table(name = "p_category")
+@SQLRestriction("deleted_at is null")
 public class Category extends BaseEntity {
 
 
@@ -28,9 +30,14 @@ public class Category extends BaseEntity {
 
     public Category(String categoryName) {
         name = categoryName;
+
     }
 
     public void updateName(String name) {
        this.name = name;
+    }
+
+    public void delete(UUID userId) {
+        this.markDeleted(userId);
     }
 }
