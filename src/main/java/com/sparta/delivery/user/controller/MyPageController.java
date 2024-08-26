@@ -17,7 +17,7 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/myPage")
-@PreAuthorize(UserRole.Authority.CUSTOMER)
+@PreAuthorize("hasRole('CUSTOMER')")
 public class MyPageController {
 
     private final MyPageService myPageService;

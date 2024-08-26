@@ -22,7 +22,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@PreAuthorize(UserRole.Authority.MANAGER)
+@PreAuthorize("hasRole('MANAGER')")
 public class UserController {
 
     private final UserService userService;
