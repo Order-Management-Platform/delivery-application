@@ -2,6 +2,8 @@ package com.sparta.delivery.user.entity;
 
 import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.user.dto.SignUpRequest;
+import com.sparta.delivery.user.dto.UpdateMyPageRequest;
+import com.sparta.delivery.user.dto.UpdateUserRequest;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -27,6 +29,7 @@ public class User extends BaseEntity {
 
     private String nickName;
 
+    @Column(unique = true)
     private String email;
 
     private String password;
@@ -60,5 +63,14 @@ public class User extends BaseEntity {
 
     public void delete(UUID userId) {
         this.markDeleted(userId);
+    }
+
+    public void updateUser(UpdateUserRequest updateUserRequest) {
+        nickName = updateUserRequest.getNickName();
+        password = updateUserRequest.getPassword();
+        phone = updateUserRequest.getTel();
+        address = updateUserRequest.getAddress();
+        zipcode = updateUserRequest.getZipcode();
+        role = updateUserRequest.getUserRole();
     }
 }
