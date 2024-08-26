@@ -22,11 +22,11 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
-@PreAuthorize("hasRole('MANAGER')")
 public class UserController {
 
     private final UserService userService;
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/signUp")
     public ResponseEntity<ResponseDto> createUser(@RequestBody SignUpRequest signUpRequest) {
         userService.createUser(signUpRequest);
@@ -34,6 +34,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     public ResponseEntity<Page<UserInfoResponse>> getUsers(
             @PageableDefault(page = 0, size = 10, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
@@ -41,7 +42,7 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
-
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{userId}")
     public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable("userId") UUID userId,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -50,6 +51,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{userId}")
     public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") UUID userId,
                                                   @RequestBody UpdateUserRequest updateUserRequest) {
@@ -58,6 +60,7 @@ public class UserController {
     }
 
 
+    @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{userId}")
     public ResponseEntity<?> deleteUser(@PathVariable("userId") UUID userId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {

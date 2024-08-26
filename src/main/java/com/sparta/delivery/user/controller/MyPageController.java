@@ -3,7 +3,6 @@ package com.sparta.delivery.user.controller;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
-import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.user.service.MyPageService;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +16,11 @@ import java.util.UUID;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user/myPage")
-@PreAuthorize("hasRole('CUSTOMER')")
 public class MyPageController {
 
     private final MyPageService myPageService;
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping
     public ResponseEntity<UserInfoResponse> myPagInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         String email = userDetails.getUsername();
@@ -29,7 +28,7 @@ public class MyPageController {
         return ResponseEntity.ok(userIngoResponse);
     }
 
-
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PutMapping
     public ResponseEntity<ResponseDto> UpdateMyPage(@RequestBody UpdateMyPageRequest updateMyPageRequest,
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails)
@@ -39,7 +38,7 @@ public class MyPageController {
         return ResponseEntity.ok(new ResponseDto(200, "user update successful"));
     }
 
-
+    @PreAuthorize("hasRole('CUSTOMER')")
     @DeleteMapping
     public ResponseEntity<ResponseDto> deleteMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UUID userId = userDetails.getUserId();
