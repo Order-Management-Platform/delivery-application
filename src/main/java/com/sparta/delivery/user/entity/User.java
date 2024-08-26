@@ -66,19 +66,19 @@ public class User extends BaseEntity {
     }
 
     public void updateMyPage(UpdateMyPageRequest updateMyPageRequest) {
-        nickName = updateMyPageRequest.getNickName();
-        password = updateMyPageRequest.getPassword();
-        phone = updateMyPageRequest.getTel();
-        address = updateMyPageRequest.getAddress();
-        zipcode = updateMyPageRequest.getZipcode();
+        this.nickName = updateMyPageRequest.getNickName();
+        this.password = updateMyPageRequest.getPassword();
+        this.phone = updateMyPageRequest.getPhone();
+        this.address = updateMyPageRequest.getAddress();
+        this.zipcode = updateMyPageRequest.getZipcode();
     }
 
     public void updateUser(UpdateUserRequest updateUserRequest) {
-        nickName = updateUserRequest.getNickName();
-        password = updateUserRequest.getPassword();
-        phone = updateUserRequest.getTel();
-        address = updateUserRequest.getAddress();
-        zipcode = updateUserRequest.getZipcode();
-        role = updateUserRequest.getUserRole();
+        this.nickName = updateUserRequest.getNickName();
+        this.password = updateUserRequest.getPassword();
+        this.phone = updateUserRequest.getPhone();
+        this.address = updateUserRequest.getAddress();
+        this.zipcode = updateUserRequest.getZipcode();
+        this.role = updateUserRequest.getRole();
     }
 }

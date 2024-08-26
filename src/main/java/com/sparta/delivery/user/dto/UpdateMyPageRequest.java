@@ -13,7 +13,7 @@ public class UpdateMyPageRequest {
 
     private String nickName;
     private String password;
-    private String tel;
+    private String phone;
     private String address;
     private String zipcode;
 
