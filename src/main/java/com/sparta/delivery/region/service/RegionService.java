@@ -1,5 +1,6 @@
 package com.sparta.delivery.region.service;
 
+import com.sparta.delivery.region.dto.RegionRequestDto;
 import com.sparta.delivery.region.dto.RegionResponseDto;
 import com.sparta.delivery.region.dto.ResponseDto;
 import com.sparta.delivery.region.entity.Region;
@@ -36,5 +37,14 @@ public class RegionService {
         Page<Region> regionList = regionRepository.findAll(pageable);
         Page<RegionResponseDto> regionResponseDtoPage = regionList.map(RegionResponseDto::of);
         return ResponseDto.of(200, "지역 조회 성공", regionResponseDtoPage);
+    }
+
+    // 지역 수정 로직
+    @Transactional
+    public ResponseDto<Void> updateRegion(RegionRequestDto request) {
+        Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() ->
+                new NullPointerException("해당 지역을 찾을 수 없습니다."));
+        region.update(request);
+        return ResponseDto.of(200, "지역 수정 성공");
     }
 }

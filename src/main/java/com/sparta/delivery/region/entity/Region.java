@@ -1,6 +1,7 @@
 package com.sparta.delivery.region.entity;
 
 import com.sparta.delivery.common.BaseEntity;
+import com.sparta.delivery.region.dto.RegionRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,5 +26,9 @@ public class Region extends BaseEntity {
         return Region.builder()
                 .name(name)
                 .build();
+    }
+
+    public void update(RegionRequestDto requestDto) {
+        this.name = requestDto.getName();
     }
 }

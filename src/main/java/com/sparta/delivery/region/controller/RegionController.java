@@ -1,5 +1,6 @@
 package com.sparta.delivery.region.controller;
 
+import com.sparta.delivery.region.dto.RegionRequestDto;
 import com.sparta.delivery.region.dto.RegionResponseDto;
 import com.sparta.delivery.region.dto.ResponseDto;
 import com.sparta.delivery.region.service.RegionService;
@@ -32,5 +33,12 @@ public class RegionController {
             @RequestParam("asc") boolean asc
     ) {
         return ResponseEntity.ok(regionService.getRegion(page, size, sort, asc));
+    }
+
+    // 지역 수정
+    @PutMapping
+    public ResponseEntity<ResponseDto<Void>> updateRegion(@RequestBody RegionRequestDto request) {
+        ResponseDto<Void> response = regionService.updateRegion(request);
+        return ResponseEntity.ok(response);
     }
 }
