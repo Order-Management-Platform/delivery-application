@@ -31,12 +31,14 @@ public class CategoryService {
         return categoryRepository.findAll(pageable).map(CategoryResponse::of);
     }
 
+
     @Transactional
-    public void updateCategory(UpdateCategoryRequest updateCategoryRequest) {
-        Category category = categoryRepository.findById(updateCategoryRequest.getId())
+    public void updateCategory(UUID categoryId, UpdateCategoryRequest updateCategoryRequest) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾지 못했습니다."));
         category.updateName(updateCategoryRequest.getName());
     }
+
 
     @Transactional
     public void deleteCategory(UUID categoryId, UUID userId) {
