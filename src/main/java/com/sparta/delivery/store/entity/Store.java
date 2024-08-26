@@ -4,6 +4,7 @@ import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "p_store")
+@Getter
 public class Store extends BaseEntity {
 
     //todo : 정수형, uuid사용
