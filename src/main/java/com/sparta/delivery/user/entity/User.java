@@ -65,6 +65,14 @@ public class User extends BaseEntity {
         this.markDeleted(userId);
     }
 
+    public void updateMyPage(UpdateMyPageRequest updateMyPageRequest) {
+        nickName = updateMyPageRequest.getNickName();
+        password = updateMyPageRequest.getPassword();
+        phone = updateMyPageRequest.getTel();
+        address = updateMyPageRequest.getAddress();
+        zipcode = updateMyPageRequest.getZipcode();
+    }
+
     public void updateUser(UpdateUserRequest updateUserRequest) {
         nickName = updateUserRequest.getNickName();
         password = updateUserRequest.getPassword();
