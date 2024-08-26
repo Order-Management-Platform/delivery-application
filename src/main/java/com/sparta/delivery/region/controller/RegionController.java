@@ -7,6 +7,8 @@ import com.sparta.delivery.region.service.RegionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/region")
 public class RegionController {
@@ -39,6 +41,13 @@ public class RegionController {
     @PutMapping
     public ResponseEntity<ResponseDto<Void>> updateRegion(@RequestBody RegionRequestDto request) {
         ResponseDto<Void> response = regionService.updateRegion(request);
+        return ResponseEntity.ok(response);
+    }
+
+    // 지역 삭제
+    @DeleteMapping("/{regionId}")
+    public ResponseEntity<ResponseDto<Void>> deleteRegion(@PathVariable(name = "regionId") UUID regionId) {
+        ResponseDto<Void> response = regionService.deleteRegion(regionId);
         return ResponseEntity.ok(response);
     }
 }

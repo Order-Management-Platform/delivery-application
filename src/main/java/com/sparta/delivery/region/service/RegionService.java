@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class RegionService {
 
@@ -46,5 +48,13 @@ public class RegionService {
                 new NullPointerException("해당 지역을 찾을 수 없습니다."));
         region.update(request);
         return ResponseDto.of(200, "지역 수정 성공");
+    }
+
+    @Transactional
+    public ResponseDto<Void> deleteRegion(UUID regionId) {
+        Region region = regionRepository.findById(regionId).orElseThrow(() ->
+                new NullPointerException("해당 지역을 찾을 수 없습니다."));
+        region.delete(regionId); // 유저 아이디로 변경해야함 - kyeonkim
+        return ResponseDto.of(200, "지역 삭제 성공");
     }
 }

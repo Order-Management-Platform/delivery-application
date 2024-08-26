@@ -31,4 +31,9 @@ public class Region extends BaseEntity {
     public void update(RegionRequestDto requestDto) {
         this.name = requestDto.getName();
     }
+
+    // 유저 아이디로 변경해야함 - kyeonkim
+    public void delete(UUID regionId) {
+        this.markDeleted(regionId);
+    }
 }
