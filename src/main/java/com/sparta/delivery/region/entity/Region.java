@@ -15,7 +15,7 @@ import java.util.UUID;
 public class Region extends BaseEntity {
     @Id
     @GeneratedValue
-    @Column(name = "region_id", nullable = false)
+    @Column(name = "region_id", nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "region_name", unique = true)

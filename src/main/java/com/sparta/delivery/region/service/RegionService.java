@@ -1,8 +1,13 @@
 package com.sparta.delivery.region.service;
 
 import com.sparta.delivery.region.dto.RegionResponseDto;
+import com.sparta.delivery.region.dto.ResponseDto;
 import com.sparta.delivery.region.entity.Region;
 import com.sparta.delivery.region.repository.RegionRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +22,19 @@ public class RegionService {
 
     // 지역 생성 로직
     @Transactional
-    public RegionResponseDto createRegion(String regionName) {
+    public ResponseDto<Void> createRegion(String regionName) {
         regionRepository.save(Region.create(regionName));
-        return RegionResponseDto.of(200, "지역 생성 성공");
+        return ResponseDto.of(200, "지역 생성 성공");
+    }
+
+    // 지역 조회 로직
+    public ResponseDto<RegionResponseDto> getRegion(int page, int size, String sort, boolean asc) {
+        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(direction, sort);
+        Pageable pageable = PageRequest.of(page, size, sortBy);
+
+        Page<Region> regionList = regionRepository.findAll(pageable);
+        Page<RegionResponseDto> regionResponseDtoPage = regionList.map(RegionResponseDto::of);
+        return ResponseDto.of(200, "지역 조회 성공", regionResponseDtoPage);
     }
 }
