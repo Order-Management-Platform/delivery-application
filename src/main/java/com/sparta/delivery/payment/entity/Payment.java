@@ -1,6 +1,7 @@
 package com.sparta.delivery.payment.entity;
 
 import com.sparta.delivery.common.BaseEntity;
+import com.sparta.delivery.payment.dto.PaymentRequest;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,8 @@ public class Payment extends BaseEntity {
     //@OneToOne
     //private Order order;
 
+    private Long paymentAmount;
+
     @Enumerated(value = EnumType.STRING)
     private PaymentStatus status;
 
@@ -38,4 +41,15 @@ public class Payment extends BaseEntity {
     private LocalDateTime paymentAt;
     private UUID paymentBy;
 
+    public static Payment toEntity(PaymentRequest paymentRequest, User user /*, Order order*/) {
+        return Payment.builder()
+                .user(user)
+                //.order(order)
+                .status(paymentRequest.getPaymentStatus())
+                .paymentAmount(paymentRequest.getPaymentAmount())
+                .paymentAt(LocalDateTime.now())
+                .paymentBy(paymentRequest.getUserId())
+                .pgTransactionId(paymentRequest.getPgTransactionId())
+                .build();
+    }
 }
