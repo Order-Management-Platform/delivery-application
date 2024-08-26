@@ -1,7 +1,7 @@
-package com.sparta.delivery.store;
+package com.sparta.delivery.store.entity;
 
 import com.sparta.delivery.common.BaseEntity;
-import com.sparta.delivery.product.Product;
+import com.sparta.delivery.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
