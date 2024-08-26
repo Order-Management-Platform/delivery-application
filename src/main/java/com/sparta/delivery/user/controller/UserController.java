@@ -4,7 +4,6 @@ import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
-import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +25,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/signUp")
     public ResponseEntity<ResponseDto> createUser(@RequestBody SignUpRequest signUpRequest) {
         userService.createUser(signUpRequest);
@@ -37,7 +35,7 @@ public class UserController {
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     public ResponseEntity<Page<UserInfoResponse>> getUsers(
-            @PageableDefault(page = 0, size = 10, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable) {
+            @PageableDefault(page = 0, size = 10,  direction = Sort.Direction.DESC) Pageable pageable) {
         Page<UserInfoResponse> users = userService.getUsers(pageable);
         return ResponseEntity.ok(users);
     }
