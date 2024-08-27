@@ -43,12 +43,16 @@ public class Order extends BaseEntity {
     @Column(name = "is_hidden", nullable = false)
     private boolean isHidden;
 
+    @Column(name = "order_status")
+    private String orderStatus;
+
     public static Order create(OrderRequestDto request, Store store) {
         return Order.builder()
                 .store(store)
                 .productList(new ArrayList<>())
                 .type(request.getOrderType())
                 .isHidden(false)
+                .orderStatus("결제 요청 중")
                 .build();
     }
 

@@ -91,9 +91,8 @@ public class OrderService {
             }).toList();
             int totalPrice = products.stream().mapToInt(product -> product.getPrice() * product.getAmount()).sum();
             String address = order.getStore().getAddress();
-            String orderStatus = "Delivery Done";
 
-            return OrderResponseDto.of(order, storeId, products, totalPrice, address, orderStatus);
+            return OrderResponseDto.of(order, storeId, products, totalPrice, address);
         });
         return ResponsePageDto.of(200, "주문 조회 성공", orderResponseDtoPage);
     }

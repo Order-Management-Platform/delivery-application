@@ -22,15 +22,12 @@ public class OrderResponseDto {
     private String address;
     private String orderStatus;
 
-
-    // 우선 하나씩 다 받고 이후에 리펙토링 필요할 듯. - kyeonkim
     public static OrderResponseDto of(
             final Order order,
             final UUID storeId,
             final List<OrderProductDto> products,
             final int totalPrice,
-            final String address,
-            final String orderStatus // 현재 Order에 컬럼이 없으므로 임시로 받아옴 - kyeonkim
+            final String address
     ) {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
@@ -39,7 +36,7 @@ public class OrderResponseDto {
                 .orderType(order.getType())
                 .totalPrice(totalPrice)
                 .address(address)
-                .orderStatus(orderStatus)
+                .orderStatus(order.getOrderStatus())
                 .build();
     }
 }
