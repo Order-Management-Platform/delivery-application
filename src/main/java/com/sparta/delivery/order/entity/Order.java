@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@SQLRestriction("deleted_at is null")
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -64,5 +66,10 @@ public class Order extends BaseEntity {
     // 주문 상태 수정 메서드
     public void updateStatus(String orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    // 주문 취소 메서드
+    public void cancel(UUID orderId) {
+        this.markDeleted(orderId);
     }
 }

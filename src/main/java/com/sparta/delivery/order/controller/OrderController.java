@@ -10,6 +10,8 @@ import com.sparta.delivery.order.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/order")
 public class OrderController {
@@ -41,5 +43,11 @@ public class OrderController {
     @PutMapping
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody UpdateOrderRequestDto request) {
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
+    }
+
+    // 주문 취소
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<ResponseDto> cancelOrder(@PathVariable(name = "orderId") UUID orderId) {
+        return ResponseEntity.ok(orderService.cancelOrder(orderId));
     }
 }

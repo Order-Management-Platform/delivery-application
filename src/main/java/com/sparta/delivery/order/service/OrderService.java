@@ -103,4 +103,13 @@ public class OrderService {
         order.updateStatus(request.getOrderStatus());
         return ResponseDto.of(200, "주문 상태 수정 성공");
     }
+
+    @Transactional
+    public ResponseDto cancelOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+        order.cancel(orderId); // 유저 아이디로 변경해야함 - kyeonkim
+        order.updateStatus("주문 취소"); // 상태값을 여기서 바꾸는게 맞는지 의문 - kyeonkim
+        return ResponseDto.of(200, "주문 취소 성공");
+    }
 }
