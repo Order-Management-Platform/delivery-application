@@ -60,4 +60,9 @@ public class Order extends BaseEntity {
     public void addProduct(OrderProduct product) {
         productList.add(product);
     }
+
+    // 주문 상태 수정 메서드
+    public void updateStatus(String orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }

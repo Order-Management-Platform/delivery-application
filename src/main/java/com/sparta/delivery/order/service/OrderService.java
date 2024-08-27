@@ -1,10 +1,8 @@
 package com.sparta.delivery.order.service;
 
+import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
-import com.sparta.delivery.order.dto.CreateOrderResponseDto;
-import com.sparta.delivery.order.dto.OrderProductDto;
-import com.sparta.delivery.order.dto.OrderRequestDto;
-import com.sparta.delivery.order.dto.OrderResponseDto;
+import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.product.entity.Product;
@@ -95,5 +93,14 @@ public class OrderService {
             return OrderResponseDto.of(order, storeId, products, totalPrice, address);
         });
         return ResponsePageDto.of(200, "주문 조회 성공", orderResponseDtoPage);
+    }
+
+    // 주문 상태 수정 로직
+    @Transactional
+    public ResponseDto updateOrderStatus(UpdateOrderRequestDto request) {
+        Order order = orderRepository.findById(request.getOrderId()).orElseThrow(() ->
+                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+        order.updateStatus(request.getOrderStatus());
+        return ResponseDto.of(200, "주문 상태 수정 성공");
     }
 }
