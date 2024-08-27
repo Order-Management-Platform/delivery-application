@@ -35,13 +35,13 @@ public class MyPageController {
     {
         UUID userId = userDetails.getUserId();
         myPageService.updateMyPage(userId, updateMyPageRequest);
-        return ResponseEntity.ok(new ResponseDto(200, "user update successful"));
+        return ResponseEntity.ok(ResponseDto.of(200,"user update successful"));
     }
 
     @DeleteMapping
     public ResponseEntity<ResponseDto> deleteMyPage(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         UUID userId = userDetails.getUserId();
         myPageService.deleteMyPage(userId);
-        return ResponseEntity.ok(new ResponseDto(200, "user delete successful"));
+        return ResponseEntity.ok(ResponseDto.of(200,"user delete successful"));
     }
 }
