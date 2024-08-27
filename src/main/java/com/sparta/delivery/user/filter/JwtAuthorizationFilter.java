@@ -1,6 +1,8 @@
 package com.sparta.delivery.user.filter;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
 import com.sparta.delivery.user.service.AuthService;
@@ -10,15 +12,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
@@ -41,8 +47,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
         if (StringUtils.hasText(tokenValue)) {
 
-            if (!jwtUtil.validateToken(tokenValue)) {
-                log.error("Token Error");
+            String errorMessage = jwtUtil.validateToken(tokenValue);
+            if (StringUtils.hasText(errorMessage)) {
+                jwtUtil.errorMessageResponse(res, errorMessage);
+
                 return;
             }
 
@@ -51,20 +59,21 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String email = info.get("email", String.class);
 
             if (!authService.isRoleMatch(email, role)) {
-                log.error("Role does not match");
+                jwtUtil.errorMessageResponse(res, "토큰 권한과 실제 권한이 맞지 않습니다.");
                 return;
             }
 
             try {
                 setAuthentication(email);
-            } catch (Exception e) {
-                log.error(e.getMessage());
+            } catch (UsernameNotFoundException e) {
+                jwtUtil.errorMessageResponse(res, e.getMessage());
                 return;
             }
         }
 
         filterChain.doFilter(req, res);
     }
+
 
     // 인증 처리
     public void setAuthentication(String email) {
