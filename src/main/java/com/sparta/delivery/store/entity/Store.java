@@ -1,9 +1,13 @@
 package com.sparta.delivery.store.entity;
 
+import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.product.entity.Product;
+import com.sparta.delivery.region.entity.Region;
+import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -17,24 +21,25 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "p_store")
 @Getter
+@Builder
 public class Store extends BaseEntity {
 
     //todo : 정수형, uuid사용
     @Id
-    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue
+    @Column(nullable = false)
     private UUID id;
 
-   /* @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="USER_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="user_id")
     private User user;
 
-    @ManyToOne(fetch=FetchType.Lazy)
-    @JoinColumn(name="CATEGORY_ID")
-    private category category;
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="category_id")
+    private Category category;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    private region region;
-    */
+    private Region region;
 
     @OneToMany(mappedBy="store",
             fetch = FetchType.LAZY,
@@ -46,7 +51,5 @@ public class Store extends BaseEntity {
     private String tel;
     private Integer minPrice;
     private String description;
-    //todo : 운영시간 -open close
-    @DateTimeFormat
     private String operatingTime;
 }

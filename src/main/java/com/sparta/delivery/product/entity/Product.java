@@ -1,6 +1,7 @@
 package com.sparta.delivery.product.entity;
 
 import com.sparta.delivery.common.BaseEntity;
+import com.sparta.delivery.product.dto.ProductModifyRequestDto;
 import com.sparta.delivery.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -19,12 +20,12 @@ import java.util.UUID;
 public class Product extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(columnDefinition = "BINARY(16)")
+    @GeneratedValue
+    @Column(nullable = false)
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "STORE_ID")
+    @JoinColumn(name = "store_id")
     private Store store;
 
     private String name;
@@ -33,6 +34,11 @@ public class Product extends BaseEntity {
     @Builder.Default
     private Boolean soldOut = false;
 
+    public void  modify(ProductModifyRequestDto dto){
+        this.name = dto.getName();
+        this.price = dto.getPrice();
+        this.description = dto.getDescription();
+    }
 
 
 }
