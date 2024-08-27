@@ -3,6 +3,7 @@ package com.sparta.delivery.user.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
 import com.sparta.delivery.user.service.AuthService;
@@ -58,7 +59,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String role = info.get("role", String.class);
             String email = info.get("email", String.class);
 
-            if (!authService.isRoleMatch(email, role)) {
+
+            if (!role.equals(UserRole.CUSTOMER.name()) && !authService.isRoleMatch(email, role)) {
                 jwtUtil.errorMessageResponse(res, "토큰 권한과 실제 권한이 맞지 않습니다.");
                 return;
             }
