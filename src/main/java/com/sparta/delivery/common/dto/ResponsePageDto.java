@@ -1,4 +1,4 @@
-package com.sparta.delivery.region.dto;
+package com.sparta.delivery.common.dto;
 
 import lombok.*;
 import org.springframework.data.domain.Page;
@@ -10,23 +10,14 @@ import java.util.List;
 @Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResponseDto<T> {
+public class ResponsePageDto<T> {
     private int status;
     private String message;
     private List<T> content;
     private CustomPageable pageable;
 
-    // content가 없는 경우
-    public static <T> ResponseDto<T> of(final int status, final String message) {
-        return ResponseDto.<T>builder()  // 제네릭 타입 명시
-                .status(status)
-                .message(message)
-                .build();
-    }
-
-    // content가 있는 경우
-    public static <T> ResponseDto<T> of(final int status, final String message, final Page<T> page) {
-        return ResponseDto.<T>builder()  // 제네릭 타입 명시
+    public static <T> ResponsePageDto<T> of(final int status, final String message, final Page<T> page) {
+        return ResponsePageDto.<T>builder()  // 제네릭 타입 명시
                 .status(status)
                 .message(message)
                 .content(page.getContent())
