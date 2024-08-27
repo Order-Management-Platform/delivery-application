@@ -1,6 +1,5 @@
 package com.sparta.delivery.product.dto;
 
-import com.sparta.delivery.product.entity.Product;
 import lombok.*;
 
 import java.util.UUID;
