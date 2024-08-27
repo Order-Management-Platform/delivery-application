@@ -1,6 +1,7 @@
 package com.sparta.delivery.payment.entity;
 
 import com.sparta.delivery.common.BaseEntity;
+import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,22 +21,41 @@ public class Payment extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(columnDefinition = "BINARY(16)")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    // 오더 연관관계 일대일
-    //@OneToOne
-    //private Order order;
+    private Long paymentAmount;
 
     @Enumerated(value = EnumType.STRING)
     private PaymentStatus status;
 
     private String pgTransactionId;
 
-    private LocalDateTime paymentAt;
-    private UUID paymentBy;
 
+    public void changePaymentByFail(PaymentStatus paymentStatus) {
+        this.status = paymentStatus;
+    }
+
+    public void changePaymentBySuccess(PaymentStatus paymentStatus, String pgTransactionId) {
+        this.status = paymentStatus;
+        this.pgTransactionId = pgTransactionId;
+    }
+
+    public void changePaymentByCancel(PaymentStatus cancelStatus) {
+        this.status = cancelStatus;
+    }
+
+    public void delete(UUID userId) {
+        this.markDeleted(userId);
+    }
+
+    public static Payment toEntity(User user, Long paymentAmount) {
+        return Payment.builder()
+                .user(user)
+                .paymentAmount(paymentAmount).build();
+    }
 }

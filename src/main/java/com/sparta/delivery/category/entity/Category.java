@@ -22,7 +22,7 @@ public class Category extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "store_category_id")
+    @Column(name = "store_category_id",columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "store_category_name")

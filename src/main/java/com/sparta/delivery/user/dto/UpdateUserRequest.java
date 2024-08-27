@@ -13,10 +13,10 @@ public class UpdateUserRequest {
     private String username;
     private String nickName;
     private String password;
-    private String tel;
+    private String phone;
     private String address;
     private String zipcode;
-    private UserRole userRole;
+    private UserRole role;
 
     public void encodingPassword(String encodedPassword) {
         password = encodedPassword;
