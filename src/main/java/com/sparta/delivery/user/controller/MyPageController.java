@@ -38,8 +38,11 @@ public class MyPageController {
                                                     @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
         if (bindingResult.hasErrors()) {
+            // 에러 메세지 로직 변경 필요 할듯.
             String errorMessage = bindingResult.getAllErrors().stream().findFirst().get().getDefaultMessage();
-            return ResponseEntity.badRequest().body(ResponseDto.of(HttpStatus.BAD_REQUEST.value(),errorMessage));
+            return ResponseEntity
+                    .badRequest()
+                    .body(ResponseDto.of(HttpStatus.BAD_REQUEST.value(),errorMessage));
         }
         UUID userId = userDetails.getUserId();
         myPageService.updateMyPage(userId, updateMyPageRequest);

@@ -7,14 +7,18 @@ import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.user.service.UserService;
+import jakarta.validation.executable.ValidateOnExecution;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -33,10 +37,19 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<ResponseDto> createUser(@RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<ResponseDto> createUser(@Validated @RequestBody SignUpRequest signUpRequest,
+                                                  BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream().findFirst().get().getDefaultMessage();
+            return ResponseEntity
+                    .badRequest()
+                    .body(ResponseDto.of(HttpStatus.BAD_REQUEST.value(), errorMessage));
+        }
+
         userService.createUser(signUpRequest);
         return ResponseEntity.ok(ResponseDto.of(200,"signUp successful"));
     }
+
 
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -58,8 +71,15 @@ public class UserController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{userId}")
-    public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") UUID userId,
+    public ResponseEntity<ResponseDto> updateUser(@Validated @PathVariable("userId") UUID userId,
+                                                  BindingResult bindingResult,
                                                   @RequestBody UpdateUserRequest updateUserRequest) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getAllErrors().stream().findFirst().get().getDefaultMessage();
+            return ResponseEntity
+                    .badRequest()
+                    .body(ResponseDto.of(HttpStatus.BAD_REQUEST.value(),errorMessage));
+        }
         userService.updateUser(userId, updateUserRequest);
         return ResponseEntity.ok(ResponseDto.of(200, "user update successful"));
     }
