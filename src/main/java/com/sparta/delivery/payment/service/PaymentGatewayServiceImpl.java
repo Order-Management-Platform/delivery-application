@@ -27,33 +27,38 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
     @Override
     public PgResponse paymentByCallback(UUID userId, PaymentRequest request) {
         // payment 조인 조회로 수정하기
-        Order order = orderRepository.findById(request.getOrderId()).orElseThrow(() -> new IllegalArgumentException("주문 내역이 없습니다."));
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("회원정보를 찾지 못했습니다."));
-        Payment payment = Payment.toEntity(user, 10000L);
-        // order 에 payment 넣어주기
+        Order order = orderRepository.findById(request.getOrderId())
+                .orElseThrow(() -> new IllegalArgumentException("주문 내역이 없습니다."));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("회원정보를 찾지 못했습니다."));
 
-        String pgTransactionId = getPgTransactionId(request);
+        Payment payment = Payment.create(user, 10000L);
+        order.addPayment(payment);
+
+        Payment savedPayment = paymentRepository.save(payment);
+        String pgTransactionId = getPgTransactionId(order.getId(), savedPayment.getId());
 
         PgResponse pgResponse = PgResponse.create(pgTransactionId);
 
-        paymentRepository.save(payment);
-
         // 주문 실패
         if (pgResponse.getStatusCode() != 200) {
-            //order.getPayment().changePaymentByFail(PaymentStatus.FAILED); custom exception 만들기
+            //주문상태 정해야할듯 - dowon
+            order.updateStatus("결제실패?");
+            payment.changePaymentByFail(PaymentStatus.FAILED); //custom exception 만들기
             throw new RuntimeException("결제 실패");
         }
 
         // 결제 상태 변경
-        //order.getPayment().changePaymentBySuccess(PaymentStatus.COMPLETED, pgResponse.getPgTransactionId());
+        order.updateStatus("주문확인중?");
+        payment.changePaymentBySuccess(PaymentStatus.COMPLETED, pgResponse.getPgTransactionId());
 
         return pgResponse;
 
     }
 
 
-    private String getPgTransactionId(PaymentRequest request) {
-        return request.getOrderId().toString().substring(0, 8) + "-"
-                + request.getPaymentId().toString().substring(0, 8);
+    private String getPgTransactionId(UUID orderId, UUID paymentId) {
+        return orderId.toString().substring(0, 8) + "-"
+                + paymentId.toString().substring(0, 8);
     }
 }
