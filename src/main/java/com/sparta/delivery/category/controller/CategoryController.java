@@ -1,5 +1,6 @@
 package com.sparta.delivery.category.controller;
 
+import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.category.dto.CategoryResponse;
@@ -30,17 +31,17 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestParam("name") String categoryName) {
         categoryService.createCategory(categoryName);
-        return ResponseEntity.ok(new ResponseDto(200, "카테고리 생성 성공"));
+        return ResponseEntity.ok(ResponseDto.of(200, "카테고리 생성 성공"));
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping
-    public ResponseEntity<Page<CategoryResponse>> getCategories(@PageableDefault(page = 0,
+    public ResponseEntity<ResponsePageDto<CategoryResponse>> getCategories(@PageableDefault(page = 0,
             size = 10,
-            sort = "createAt",
+            sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
         Page<CategoryResponse> categories = categoryService.getCategories(pageable);
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(ResponsePageDto.of(200, "조회 성공",categories));
     }
 
 
@@ -49,7 +50,7 @@ public class CategoryController {
     public ResponseEntity<ResponseDto> updateCategory(@PathVariable("categoryId")UUID categoryId,
                                                       @RequestBody UpdateCategoryRequest updateCategoryRequest) {
         categoryService.updateCategory(categoryId, updateCategoryRequest);
-        return ResponseEntity.ok(new ResponseDto(200, "카테고리 수정 성공"));
+        return ResponseEntity.ok(ResponseDto.of(200, "카테고리 수정 성공"));
     }
 
 
@@ -59,6 +60,6 @@ public class CategoryController {
                                                       @AuthenticationPrincipal UserDetails userDetails)
     {
         categoryService.deleteCategory(categoryId, ((UserDetailsImpl) userDetails).getUserId());
-        return ResponseEntity.ok(new ResponseDto(200, "카테고리 삭제 성공"));
+        return ResponseEntity.ok(ResponseDto.of(200, "카테고리 삭제 성공"));
     }
 }

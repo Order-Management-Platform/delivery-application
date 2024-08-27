@@ -1,6 +1,7 @@
 package com.sparta.delivery.user.controller;
 
 import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
@@ -25,19 +26,25 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/checkEmail")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam("email") String email) {
+        boolean result = userService.checkEmail(email);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/signUp")
     public ResponseEntity<ResponseDto> createUser(@RequestBody SignUpRequest signUpRequest) {
         userService.createUser(signUpRequest);
-        return ResponseEntity.ok(new ResponseDto(200,"signUp successful"));
+        return ResponseEntity.ok(ResponseDto.of(200,"signUp successful"));
     }
 
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
-    public ResponseEntity<Page<UserInfoResponse>> getUsers(
-            @PageableDefault(page = 0, size = 10,  direction = Sort.Direction.DESC) Pageable pageable) {
+    public ResponseEntity<ResponsePageDto<UserInfoResponse>> getUsers(
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<UserInfoResponse> users = userService.getUsers(pageable);
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(ResponsePageDto.of(200, "조회 성공",users));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -54,7 +61,7 @@ public class UserController {
     public ResponseEntity<ResponseDto> updateUser(@PathVariable("userId") UUID userId,
                                                   @RequestBody UpdateUserRequest updateUserRequest) {
         userService.updateUser(userId, updateUserRequest);
-        return ResponseEntity.ok(new ResponseDto(200, "user update successful"));
+        return ResponseEntity.ok(ResponseDto.of(200, "user update successful"));
     }
 
 
@@ -63,6 +70,6 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable("userId") UUID userId,
                                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok(new ResponseDto(200, "user deleted successful."));
+        return ResponseEntity.ok(ResponseDto.of(200, "user deleted successful."));
     }
 }
