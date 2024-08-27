@@ -26,6 +26,12 @@ public class UserController {
 
     private final UserService userService;
 
+    @GetMapping("/checkEmail")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam("email") String email) {
+        boolean result = userService.checkEmail(email);
+        return ResponseEntity.ok(result);
+    }
+
     @PostMapping("/signUp")
     public ResponseEntity<ResponseDto> createUser(@RequestBody SignUpRequest signUpRequest) {
         userService.createUser(signUpRequest);
