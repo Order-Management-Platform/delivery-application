@@ -15,8 +15,5 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
 
     Page<Product> findAllByStoreId(UUID storeId, Pageable pageable);
-
-   /* @Query(value = "UPDATA Product" +
-            "SET soldOut= !soldOut")
-    void switchProductStatus(UUID productId);*/
+    List<Product> findAllByStoreId(UUID storeId);
 }

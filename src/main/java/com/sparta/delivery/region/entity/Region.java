@@ -1,6 +1,7 @@
 package com.sparta.delivery.region.entity;
 
 import com.sparta.delivery.common.BaseEntity;
+import com.sparta.delivery.region.dto.RegionRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.UUID;
 public class Region extends BaseEntity {
     @Id
     @GeneratedValue
-    @Column(name = "region_id", nullable = false)
+    @Column(name = "region_id", nullable = false, columnDefinition = "BINARY(16)")
     private UUID id;
 
     @Column(name = "region_name", unique = true)
@@ -25,5 +26,14 @@ public class Region extends BaseEntity {
         return Region.builder()
                 .name(name)
                 .build();
+    }
+
+    public void update(RegionRequestDto requestDto) {
+        this.name = requestDto.getName();
+    }
+
+    // 유저 아이디로 변경해야함 - kyeonkim
+    public void delete(UUID regionId) {
+        this.markDeleted(regionId);
     }
 }

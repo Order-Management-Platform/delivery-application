@@ -4,14 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderRequestDto {
-    private UUID storeId;
-    private List<OrderProductRequestDto> product;
-    private String orderType;
+public class OrderProductRequestDto {
+    private UUID productId;
+    private int price;
 }
