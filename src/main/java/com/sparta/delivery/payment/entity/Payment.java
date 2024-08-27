@@ -1,7 +1,7 @@
 package com.sparta.delivery.payment.entity;
 
 import com.sparta.delivery.common.BaseEntity;
-import com.sparta.delivery.payment.dto.PaymentRequest;
+import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,10 +28,6 @@ public class Payment extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    // 오더 연관관계 일대일
-    //@OneToOne
-    //private Order order;
-
     private Long paymentAmount;
 
     @Enumerated(value = EnumType.STRING)
@@ -39,18 +35,27 @@ public class Payment extends BaseEntity {
 
     private String pgTransactionId;
 
-    private LocalDateTime paymentAt;
-    private UUID paymentBy;
 
-    public static Payment toEntity(PaymentRequest paymentRequest, User user /*, Order order*/) {
+    public void changePaymentByFail(PaymentStatus paymentStatus) {
+        this.status = paymentStatus;
+    }
+
+    public void changePaymentBySuccess(PaymentStatus paymentStatus, String pgTransactionId) {
+        this.status = paymentStatus;
+        this.pgTransactionId = pgTransactionId;
+    }
+
+    public void changePaymentByCancel(PaymentStatus cancelStatus) {
+        this.status = cancelStatus;
+    }
+
+    public void delete(UUID userId) {
+        this.markDeleted(userId);
+    }
+
+    public static Payment toEntity(User user, Long paymentAmount) {
         return Payment.builder()
                 .user(user)
-                //.order(order)
-                .status(paymentRequest.getPaymentStatus())
-                .paymentAmount(paymentRequest.getPaymentAmount())
-                .paymentAt(LocalDateTime.now())
-                .paymentBy(paymentRequest.getUserId())
-                .pgTransactionId(paymentRequest.getPgTransactionId())
-                .build();
+                .paymentAmount(paymentAmount).build();
     }
 }
