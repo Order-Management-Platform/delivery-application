@@ -1,13 +1,12 @@
 package com.sparta.delivery.order.controller;
 
+import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.order.dto.CreateOrderResponseDto;
 import com.sparta.delivery.order.dto.OrderRequestDto;
+import com.sparta.delivery.order.dto.OrderResponseDto;
 import com.sparta.delivery.order.service.OrderService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/order")
@@ -26,7 +25,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    /*
     // 주문 조회
     @GetMapping
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getOrder(
@@ -37,5 +35,4 @@ public class OrderController {
     ) {
         return ResponseEntity.ok(orderService.getOrder(page, size, sort, asc));
     }
-    */
 }

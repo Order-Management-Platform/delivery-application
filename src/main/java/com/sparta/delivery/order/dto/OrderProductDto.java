@@ -13,12 +13,14 @@ import java.util.UUID;
 @Builder
 public class OrderProductDto {
     private UUID productId;
+    private int price;
     private int amount;
 
-    public static OrderProductDto of(final OrderProductDto orderProductDto) {
+    public static OrderProductDto of(final UUID productId, final int price, final int amount) {
         return OrderProductDto.builder()
-                .productId(orderProductDto.getProductId())
-                .amount(orderProductDto.getAmount())
+                .productId(productId)
+                .price(price)
+                .amount(amount)
                 .build();
     }
 }
