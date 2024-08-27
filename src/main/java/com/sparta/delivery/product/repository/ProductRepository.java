@@ -14,5 +14,5 @@ import java.util.UUID;
 public interface ProductRepository extends JpaRepository<Product, UUID> {
     //storeId를 store로 변경해서
     Page<Product> findAllByStoreId(UUID storeId, Pageable pageable);
-
+    List<Product> findAllByStoreId(UUID storeId);
 }
