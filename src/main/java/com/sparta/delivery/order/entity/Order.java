@@ -2,6 +2,7 @@ package com.sparta.delivery.order.entity;
 
 import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.order.dto.OrderRequestDto;
+import com.sparta.delivery.payment.entity.Payment;
 import com.sparta.delivery.store.entity.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,10 @@ public class Order extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "order_id", columnDefinition = "BINARY(16)")
     private UUID id;
+
+    @OneToOne
+    @JoinColumn(name = "payment_id")
+    private Payment payment;
 
     @ManyToOne
     @JoinColumn(name = "store_id")

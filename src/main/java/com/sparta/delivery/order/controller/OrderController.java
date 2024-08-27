@@ -1,7 +1,7 @@
 package com.sparta.delivery.order.controller;
 
-import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.order.dto.OrderRequestDto;
+import com.sparta.delivery.order.dto.OrderResponseDto;
 import com.sparta.delivery.order.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +21,8 @@ public class OrderController {
 
     // 주문 생성
     @PostMapping
-    public ResponseEntity<ResponseDto> createOrder(@RequestBody OrderRequestDto orderRequest) {
-        ResponseDto response = orderService.createOrder(orderRequest);
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequest) {
+        OrderResponseDto response = orderService.createOrder(orderRequest);
         return ResponseEntity.ok(response);
     }
 

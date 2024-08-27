@@ -1,10 +1,10 @@
 package com.sparta.delivery.order.service;
 
-import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.order.dto.OrderProductRequestDto;
 import com.sparta.delivery.order.dto.OrderRequestDto;
+import com.sparta.delivery.order.dto.OrderResponseDto;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
-import com.sparta.delivery.order.dto.OrderProductRequestDto;
 import com.sparta.delivery.product.repository.ProductRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
@@ -27,22 +27,22 @@ public class OrderService {
             final OrderRepository orderRepository,
             final StoreRepository storeRepository,
             final ProductRepository productRepository
-            ) {
+    ) {
         this.orderRepository = orderRepository;
         this.storeRepository = storeRepository;
         this.productRepository = productRepository;
     }
 
     @Transactional
-    public ResponseDto createOrder(OrderRequestDto request) {
+    public OrderResponseDto createOrder(OrderRequestDto request) {
         Store store = storeRepository.findById(request.getStoreId()).orElseThrow(() ->
                 new NullPointerException("해당 가게를 찾을 수 없습니다."));
         Order createOrder = orderRepository.save(Order.create(request, store));
-        for (OrderProductRequestDto product: request.getProduct()) {
+
+        for (OrderProductRequestDto product : request.getProduct()) {
             addProductToOder(createOrder, request.getStoreId(), product.getProductId());
         }
-
-        return ResponseDto.of(200, "주문 생성 성공");
+        return OrderResponseDto.of(200, "주문 생성 성공", createOrder.getId());
     }
 
     @Transactional
