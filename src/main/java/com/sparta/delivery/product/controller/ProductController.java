@@ -27,18 +27,17 @@ public class ProductController {
         productService.createProduct(dto);
     }
 
-    //@PagealbeDefault로 변경
     @GetMapping("/store/{storeId}")
     public Page<ProductListResponseDto> getStoreProductList(@PathVariable UUID storeId,
-                                                            @RequestParam(required = false) String keyWord,
+                                                            @RequestParam(required = false,defaultValue="") String keyWord,
                                                             @RequestParam(required = false, defaultValue = "1") int page,
                                                             @RequestParam(required = false, defaultValue = "10") int size,
                                                             @RequestParam(required = false, defaultValue = "false") boolean asc,
                                                             @RequestParam(required = false, defaultValue = "createdAt") String sort
     ) {
-        Pageable pageable = asc ? PageRequest.of(page, size, Sort.by(sort).ascending()) :
-                PageRequest.of(page, size, Sort.by(sort).descending());
-        return productService.getStoreProductList(storeId, pageable);
+        Pageable pageable = asc ? PageRequest.of(page-1, size, Sort.by(sort).ascending()) :
+                PageRequest.of(page-1, size, Sort.by(sort).descending());
+        return productService.getStoreProductList(storeId,keyWord, pageable);
     }
 
     @GetMapping("/{productId}")
@@ -52,11 +51,11 @@ public class ProductController {
         productService.modifyProduct(productId, dto);
     }
 
-    //상품 sold out 상태 관리
-    /*@PatchMapping("/{productId}")
+
+    @PatchMapping("/{productId}")
     public void switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
-    }*/
+    }
 
     @DeleteMapping("/{productId}")
     public void deleteProduct(@PathVariable UUID productId) {
