@@ -32,9 +32,9 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(
             @RequestBody OrderRequestDto orderRequest,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return ResponseEntity.ok(orderService.createOrder(orderRequest, ((UserDetailsImpl) userDetails).getUserId()));
+        return ResponseEntity.ok(orderService.createOrder(orderRequest, userDetails.getUserId()));
     }
 
     // 주문 전체 조회
@@ -57,9 +57,9 @@ public class OrderController {
             @RequestParam("size") int size,
             @RequestParam("sort") String sort,
             @RequestParam("asc") boolean asc,
-            @AuthenticationPrincipal UserDetails userDetails
+            @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return ResponseEntity.ok(orderService.getUserOrder(page, size, sort, asc, ((UserDetailsImpl) userDetails).getUserId()));
+        return ResponseEntity.ok(orderService.getUserOrder(page, size, sort, asc, userDetails.getUserId()));
     }
 
     // 주문 가게 전체 조회
@@ -76,23 +76,21 @@ public class OrderController {
     }
 
     // 주문 단건 조회
-    // 추가적으로 조회 요청을 보낸 사람이 해당 주문을 한게 맞는지 확인하는 작업이 필요 - kyeonkim
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtilKyeonkim.checkOrderOwnership(#orderId, authentication)")
     @GetMapping("/{orderId}")
     public ResponseEntity<ResponseSingleDto<OrderResponseDto>> getFindByOrder(@PathVariable(name = "orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getFindByOrder(orderId));
     }
 
     // 주문 상태 수정
-    @PreAuthorize("hasRole('OWNER')and @securityUtilKyeonkim.checkUpdateOrderOwnership(#request.orderId, authentication)")
+    @PreAuthorize("hasRole('OWNER') and @securityUtilKyeonkim.checkUpdateOrderOwnership(#request.orderId, authentication)")
     @PutMapping
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody UpdateOrderRequestDto request) {
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
     }
 
     // 주문 취소
-    // 주문을 취소한 유저가 요청을 보낸 유저가 맞는 확인하는 로직 필요 - kyeonkim
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtilKyeonkim.checkOrderOwnership(#orderId, authentication)")
     @DeleteMapping("/{orderId}")
     public ResponseEntity<ResponseDto> cancelOrder(
             @PathVariable(name = "orderId") UUID orderId,

@@ -61,4 +61,17 @@ public class SecurityUtilKyeonkim {
         return authenticatedUserId.equals(store.getUser().getId());
     }
 
+    // 주문 요청의 id와 요청을 보낸 유저가 동일한지 확인
+    public boolean checkOrderOwnership(UUID orderId, Authentication authentication) {
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isEmpty()) {
+            return false;
+        }
+
+        Order order = optionalOrder.get();
+        UUID authenticatedUserId = ((UserDetailsImpl) authentication.getPrincipal()).getUserId();
+
+        return authenticatedUserId.equals(order.getUser().getId());
+    }
+
 }
