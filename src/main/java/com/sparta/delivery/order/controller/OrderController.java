@@ -12,7 +12,6 @@ import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -63,7 +62,7 @@ public class OrderController {
     }
 
     // 주문 가게 전체 조회
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER') and @securityUtilKyeonkim.checkStoreOwnership(#storeId, authentication)")
     @GetMapping("/store")
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getStoreOrder(
             @RequestParam("page") int page,

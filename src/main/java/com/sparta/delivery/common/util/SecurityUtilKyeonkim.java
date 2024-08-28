@@ -74,4 +74,17 @@ public class SecurityUtilKyeonkim {
         return authenticatedUserId.equals(order.getUser().getId());
     }
 
+    // 주문 가게 조회 요청 시 요청을 보낸 유저가 가게 주인이 맞는지 확인
+    public boolean checkStoreOwnership(UUID storeId, Authentication authentication) {
+        Optional<Store> optionalStore = storeRepository.findById(storeId);
+        if (optionalStore.isEmpty()) {
+            return false;
+        }
+
+        Store store = optionalStore.get();
+        UUID authenticatedUserId = ((UserDetailsImpl) authentication.getPrincipal()).getUserId();
+
+        return authenticatedUserId.equals(store.getUser().getId());
+    }
+
 }
