@@ -15,6 +15,6 @@ import java.util.UUID;
 public interface StoreRepository extends JpaRepository<Store, UUID> {
     List<Store> findAllByUser(User user);
 
-    Page<Store> findByCategoryIdAndRegionIdAndNameContaining(UUID categoryId, UUID regionId, String name, Pageable pageable);
-    Page<Store> findByRegionIdAndNameContaining(UUID regionId, String name, Pageable pageable);
+    Page<Store> findAllByCategoryIdAndRegionIdAndNameContaining(UUID categoryId, UUID regionId, String name, Pageable pageable);
+    Page<Store> findAllByRegionIdAndNameContaining(UUID regionId, String name, Pageable pageable);
 }
