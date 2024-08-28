@@ -26,7 +26,7 @@ public class AiService {
     public String getAiDescription(String name) throws JsonProcessingException {
 
         String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + key;
-        String jsonString = "{\"contents\":[{\"parts\":[{\"text\":\"음식점 만두를 설명하는 글 한줄 작성해줘\"}]}]}";
+        String jsonString = "{\"contents\":[{\"parts\":[{\"text\":\"음식점 메뉴"+ name+"를 설명하는 글 한줄 작성해줘\"}]}]}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
