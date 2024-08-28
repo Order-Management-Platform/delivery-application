@@ -1,5 +1,6 @@
 package com.sparta.delivery.payment.service;
 
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.payment.dto.PaymentRequest;
@@ -28,9 +29,9 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
     public PgResponse paymentByCallback(UUID userId, PaymentRequest request) {
         // payment 조인 조회로 수정하기
         Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new IllegalArgumentException("주문 내역이 없습니다."));
+                .orElseThrow(() -> new NotFoundException("주문 내역이 없습니다."));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원정보를 찾지 못했습니다."));
+                .orElseThrow(() -> new NotFoundException("회원정보를 찾지 못했습니다."));
 
         Payment payment = Payment.create(user, 10000L);
         order.addPayment(payment);

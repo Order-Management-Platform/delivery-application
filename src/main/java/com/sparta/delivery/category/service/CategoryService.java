@@ -4,6 +4,7 @@ import com.sparta.delivery.category.dto.CategoryResponse;
 import com.sparta.delivery.category.dto.UpdateCategoryRequest;
 import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.category.repository.CategoryRepository;
+import com.sparta.delivery.common.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -35,7 +36,7 @@ public class CategoryService {
     @Transactional
     public void updateCategory(UUID categoryId, UpdateCategoryRequest updateCategoryRequest) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("카테고리를 찾지 못했습니다."));
+                .orElseThrow(() -> new NotFoundException("존재 하지 않는 카테고리 입니다."));
         category.updateName(updateCategoryRequest.getName());
     }
 
@@ -43,7 +44,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(UUID categoryId, UUID userId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new IllegalArgumentException("존재 하지 않는 카테고리 입니다."));
+                .orElseThrow(() -> new NotFoundException("존재 하지 않는 카테고리 입니다."));
         category.delete(userId);
         category.markDeleted(userId);
     }

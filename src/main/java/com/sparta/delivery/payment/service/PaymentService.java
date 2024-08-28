@@ -1,5 +1,6 @@
 package com.sparta.delivery.payment.service;
 
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.payment.dto.CancelPaymentRequest;
 import com.sparta.delivery.payment.dto.PaymentInfoResponse;
@@ -30,14 +31,14 @@ public class PaymentService {
     public PaymentInfoResponse getPayment(UUID paymentId) {
         return paymentRepository.findById(paymentId)
                 .map(PaymentInfoResponse::of)
-                .orElseThrow(() -> new IllegalArgumentException("결제 내역을 찾을수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("결제 내역을 찾을수 없습니다."));
     }
 
 
     @Transactional
     public void updatePayment(UUID paymentId, CancelPaymentRequest cancelPaymentRequest) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 내역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("결제 내역을 찾을 수 없습니다."));
         payment.changePaymentByCancel(cancelPaymentRequest.getPaymentStatus());
     }
 
@@ -45,7 +46,7 @@ public class PaymentService {
     @Transactional
     public void deletePayment(UUID paymentId, UUID userId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new IllegalArgumentException("결제 내역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("결제 내역을 찾을 수 없습니다."));
         payment.delete(userId);
     }
 }
