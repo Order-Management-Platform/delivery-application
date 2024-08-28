@@ -8,6 +8,5 @@ import java.util.UUID;
 @Getter
 public class PaymentRequest {
 
-    private UUID paymentId;
     private UUID orderId;
 }

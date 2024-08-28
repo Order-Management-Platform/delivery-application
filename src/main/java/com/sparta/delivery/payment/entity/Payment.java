@@ -1,13 +1,11 @@
 package com.sparta.delivery.payment.entity;
 
 import com.sparta.delivery.common.BaseEntity;
-import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -53,7 +51,7 @@ public class Payment extends BaseEntity {
         this.markDeleted(userId);
     }
 
-    public static Payment toEntity(User user, Long paymentAmount) {
+    public static Payment create(User user, Long paymentAmount) {
         return Payment.builder()
                 .user(user)
                 .paymentAmount(paymentAmount).build();

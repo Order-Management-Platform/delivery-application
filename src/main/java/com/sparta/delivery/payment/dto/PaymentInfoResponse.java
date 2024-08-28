@@ -15,7 +15,6 @@ public class PaymentInfoResponse {
 
     private UUID paymentId;
     private UUID userId;
-    private UUID orderId;
     private Long paymentAmount;
     private PaymentStatus paymentStatus;
     private String pgTransactionId;
@@ -25,7 +24,6 @@ public class PaymentInfoResponse {
         return PaymentInfoResponse.builder()
                 .paymentId(payment.getId())
                 .userId(payment.getUser().getId())
-//                .orderId(payment.getOrder().getId())
                 .paymentAmount(payment.getPaymentAmount())
                 .paymentStatus(payment.getStatus())
                 .pgTransactionId(payment.getPgTransactionId())

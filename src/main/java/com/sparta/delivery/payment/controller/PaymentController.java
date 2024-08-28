@@ -5,6 +5,7 @@ import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.payment.dto.CancelPaymentRequest;
 import com.sparta.delivery.payment.dto.PaymentRequest;
 import com.sparta.delivery.payment.dto.PaymentInfoResponse;
+import com.sparta.delivery.payment.dto.PgResponse;
 import com.sparta.delivery.payment.service.PaymentGatewayService;
 import com.sparta.delivery.payment.service.PaymentService;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
@@ -30,11 +31,11 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping //결제 요청
-    public ResponseEntity<ResponseDto> createPayment(@RequestBody PaymentRequest paymentCallbackRequest,
+    public ResponseEntity<ResponseDto> createPayment(@RequestBody PaymentRequest paymentRequest,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         UUID userId = userDetails.getUserId();
-        paymentGatewayService.paymentByCallback(userId, paymentCallbackRequest);
-        return ResponseEntity.ok(ResponseDto.of(200, "payment successful"));
+        PgResponse response = paymentGatewayService.paymentByCallback(userId, paymentRequest);
+        return ResponseEntity.ok(ResponseDto.of(200, "payment successful 결제 ID : " + response.getPgTransactionId()));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -51,6 +52,9 @@ public class PaymentController {
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/{paymentId}")
     public ResponseEntity<PaymentInfoResponse> getPayment(@PathVariable("paymentId") UUID paymentId) {
+        //고객은 본인 결제내역만 보이게
+        //사장님은 ..?
+        //관리자는 다보이게
         PaymentInfoResponse paymentInfoResponse = paymentService.getPayment(paymentId);
         return ResponseEntity.ok(paymentInfoResponse);
     }
