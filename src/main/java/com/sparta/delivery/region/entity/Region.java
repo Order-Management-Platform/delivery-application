@@ -4,6 +4,7 @@ import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.region.dto.RegionRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.UUID;
 
@@ -13,6 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(access = AccessLevel.PRIVATE)
+@SQLRestriction("deleted_at is null")
 public class Region extends BaseEntity {
     @Id
     @GeneratedValue
