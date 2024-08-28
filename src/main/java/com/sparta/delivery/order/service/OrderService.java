@@ -2,6 +2,7 @@ package com.sparta.delivery.order.service;
 
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
@@ -76,7 +77,7 @@ public class OrderService {
             UUID storeId = order.getStore().getId();
             // 상품의 가격을 가져와 OrderProductDto로 만들어주는 loop - kyeonkim
             List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
-                OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
+                    OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
             ).toList();
             int totalPrice = products.stream().mapToInt(product -> product.getPrice() * product.getAmount()).sum();
             String address = order.getStore().getAddress();
@@ -84,6 +85,20 @@ public class OrderService {
             return OrderResponseDto.of(order, storeId, products, totalPrice, address);
         });
         return ResponsePageDto.of(200, "주문 조회 성공", orderResponseDtoPage);
+    }
+
+    // 주문 단건 조회 로직
+    public ResponseSingleDto<OrderResponseDto> getFindByOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(() ->
+                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+        Store store = storeRepository.findById(order.getStore().getId()).orElseThrow(() ->
+                new NullPointerException("해당 가게를 찾을 수 없습니다."));
+        List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
+                OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
+        ).toList();
+        int totalPrice = products.stream().mapToInt(product -> product.getPrice() * product.getAmount()).sum();
+        return ResponseSingleDto.of(200, "주문 단건 조회 성공",
+                OrderResponseDto.of(order, store.getId(), products, totalPrice, store.getAddress()));
     }
 
     // 주문 상태 수정 로직
@@ -95,6 +110,7 @@ public class OrderService {
         return ResponseDto.of(200, "주문 상태 수정 성공");
     }
 
+    // 주문 취소 로직
     @Transactional
     public ResponseDto cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->

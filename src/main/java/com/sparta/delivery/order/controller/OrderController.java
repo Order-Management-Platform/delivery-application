@@ -2,6 +2,7 @@ package com.sparta.delivery.order.controller;
 
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.order.dto.CreateOrderResponseDto;
 import com.sparta.delivery.order.dto.OrderRequestDto;
 import com.sparta.delivery.order.dto.OrderResponseDto;
@@ -37,6 +38,12 @@ public class OrderController {
             @RequestParam("asc") boolean asc
     ) {
         return ResponseEntity.ok(orderService.getOrder(page, size, sort, asc));
+    }
+
+    // 주문 단건 조회
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ResponseSingleDto<OrderResponseDto>> getFindByOrder(@PathVariable(name = "orderId") UUID orderId) {
+        return ResponseEntity.ok(orderService.getFindByOrder(orderId));
     }
 
     // 주문 상태 수정
