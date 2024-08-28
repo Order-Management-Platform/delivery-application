@@ -42,11 +42,13 @@ public class ProductService {
 
 
     //가게 내 상품 조회
+    /*
     public  Page<ProductListResponseDto> getStoreProductList(UUID storeId,String keyWord, Pageable pageable) {
 
         Page<Product> product = productRepository.findAllByStoreIdAndNameContaining(storeId,keyWord, pageable);
         return product.map(ProductListResponseDto::of);
     }
+   */
 
     //상품 상세 조회
     public ProductResponseDto getProduct(UUID productId) {
@@ -63,11 +65,13 @@ public class ProductService {
     }
 
     //상품 상태
+    /*
     @Transactional
     public void modifyProductStatus(UUID productId) {
         Product product = productRepository.findById(productId).get();
         productRepository.modifyStatus(productId,!product.getSoldOut());
     }
+     */
 
     //상품 삭제
     @Transactional

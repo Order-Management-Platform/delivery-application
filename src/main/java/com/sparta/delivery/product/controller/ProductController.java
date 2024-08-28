@@ -3,7 +3,6 @@ package com.sparta.delivery.product.controller;
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
-import com.sparta.delivery.common.dto.SuccResponseEntity;
 import com.sparta.delivery.product.dto.ProductCreateRequestDto;
 import com.sparta.delivery.product.dto.ProductListResponseDto;
 import com.sparta.delivery.product.dto.ProductModifyRequestDto;
@@ -31,6 +30,7 @@ public class ProductController {
      * 음식점 상품 추가
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    /*
     @PostMapping
     public ResponseEntity createProduct(@RequestBody ProductCreateRequestDto dto) {
         productService.createProduct(dto);
@@ -50,6 +50,7 @@ public class ProductController {
         Page<ProductListResponseDto> response = productService.getStoreProductList(storeId, keyWord, pageable);
         return ResponseEntity.ok(ResponsePageDto.of(200, "가게 내 상품 조회 성공", response));
     }
+     */
 
     /**
      * 상품 상세조회
@@ -66,24 +67,27 @@ public class ProductController {
      *  상품 수정
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    /*
     @PutMapping("/{productId}")
     public SuccResponseEntity ModifyProduct(@PathVariable UUID productId,
                                             @RequestBody ProductModifyRequestDto dto) {
         productService.modifyProduct(productId, dto);
         return new SuccResponseEntity(ResponseCode.SUCC_PRODUCT_MODIFY);
     }
+    */
 
 
     /**
      * 상품 상태 변경
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    /*
     @PatchMapping("/{productId}")
     public ResponseEntity switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
         return ResponseEntity.ok(ResponseDto.of(200, "상품 상태 변경 성공"));
     }
-
+    */
     /**
      * 상품 상태 변경
      */
