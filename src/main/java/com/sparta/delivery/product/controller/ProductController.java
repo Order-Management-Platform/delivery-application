@@ -3,6 +3,7 @@ package com.sparta.delivery.product.controller;
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.product.dto.ProductCreateRequestDto;
 import com.sparta.delivery.product.dto.ProductListResponseDto;
 import com.sparta.delivery.product.dto.ProductModifyRequestDto;
@@ -31,13 +32,17 @@ public class ProductController {
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
     @PostMapping
-    public ResponseEntity createProduct(@RequestBody ProductCreateRequestDto dto) {
+    public ResponseDto createProduct(@RequestBody ProductCreateRequestDto dto) {
         productService.createProduct(dto);
-        return ResponseEntity.ok(ResponseDto.of(200, "상품 생성 성공"));
+        return ResponseDto.of(ResponseCode.SUCC_PRODUCT_CREATE);
     }
 
+    /**
+     * 음식점 목록 조회
+     */
+    //쿼리스트링 dto로 매핑 , pageable service단에서
     @GetMapping("/store/{storeId}")
-    public ResponseEntity getStoreProductList(@PathVariable UUID storeId,
+    public ResponsePageDto getStoreProductList(@PathVariable UUID storeId,
                                                             @RequestParam(required = false,defaultValue="") String keyWord,
                                                             @RequestParam(required = false, defaultValue = "1") int page,
                                                             @RequestParam(required = false, defaultValue = "10") int size,
@@ -46,8 +51,8 @@ public class ProductController {
     ) {
         Pageable pageable = asc ? PageRequest.of(page-1, size, Sort.by(sort).ascending()) :
                 PageRequest.of(page-1, size, Sort.by(sort).descending());
-        Page<ProductListResponseDto> response = productService.getStoreProductList(storeId, keyWord, pageable);
-        return ResponseEntity.ok(ResponsePageDto.of(200, "가게 내 상품 조회 성공", response));
+        Page<ProductListResponseDto> data = productService.getStoreProductList(storeId, keyWord, pageable);
+        return ResponsePageDto.of(ResponseCode.SUCC_PRODUCT_LIST_GET, data);
     }
 
     /**
@@ -55,10 +60,9 @@ public class ProductController {
      */
     //@PreAuthorize("isAuthenticated()")
     @GetMapping("/{productId}")
-    public void getProduct(@PathVariable UUID productId) {
-        ProductResponseDto response=productService.getProduct(productId);
-       // return ResponseEntity.ok(ResponsePageDto.of(200,"상품 상세 조회 성공"));
-
+    public ResponseSingleDto getProduct(@PathVariable UUID productId) {
+        ProductResponseDto data=productService.getProduct(productId);
+        return ResponseSingleDto.of(ResponseCode.SUCC_PRODUCT_GET,data);
     }
 
     /**
@@ -66,30 +70,29 @@ public class ProductController {
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
     @PutMapping("/{productId}")
-    public ResponseEntity ModifyProduct(@PathVariable UUID productId,
+    public ResponseDto ModifyProduct(@PathVariable UUID productId,
                                             @RequestBody ProductModifyRequestDto dto) {
         productService.modifyProduct(productId, dto);
-        return ResponseEntity.ok(ResponseDto.of(200, "상품 수정 성공"));
+        return ResponseDto.of(ResponseCode.SUCC_PRODUCT_MODIFY);
     }
-
 
     /**
      * 상품 상태 변경
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
     @PatchMapping("/{productId}")
-    public ResponseEntity switchProductStatus(@PathVariable UUID productId) {
+    public ResponseDto switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
-        return ResponseEntity.ok(ResponseDto.of(200, "상품 상태 변경 성공"));
+        return ResponseDto.of(ResponseCode.SUCC_PRODUCT_SWITCH_STATUS);
     }
+
     /**
-     * 상품 상태 변경
+     * 상품 삭제
      */
     //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
     @DeleteMapping("/{productId}")
-    public ResponseEntity deleteProduct(@PathVariable UUID productId) {
+    public ResponseDto deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId);
-        return ResponseEntity.ok(ResponseDto.of(200, "상품 삭제 성공"));
-
+        return ResponseDto.of(ResponseCode.SUCC_PRODUCT_DELETE);
     }
 }
