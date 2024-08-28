@@ -51,11 +51,12 @@ public class RegionService {
         return ResponseDto.of(200, "지역 수정 성공");
     }
 
+    // 지역 삭제 로직
     @Transactional
-    public ResponseDto deleteRegion(UUID regionId) {
+    public ResponseDto deleteRegion(UUID regionId, UUID userId) {
         Region region = regionRepository.findById(regionId).orElseThrow(() ->
                 new NullPointerException("해당 지역을 찾을 수 없습니다."));
-        region.delete(regionId); // 유저 아이디로 변경해야함 - kyeonkim
+        region.delete(userId);
         return ResponseDto.of(200, "지역 삭제 성공");
     }
 }
