@@ -61,7 +61,7 @@ public class OrderService {
 
     // 주문 생성 로직 시 상품 추가
     @Transactional
-    public void addProductToOder(
+    protected void addProductToOder(
             final Order order,
             final UUID storeId,
             final UUID productId,
@@ -75,13 +75,32 @@ public class OrderService {
 
     // 주문 전체 조회 로직
     public ResponsePageDto<OrderResponseDto> getOrder(int page, int size, String sort, boolean asc) {
-        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sortBy = Sort.by(direction, sort);
-        Pageable pageable = PageRequest.of(page, size, sortBy);
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
 
         Page<Order> orderList = orderRepository.findAll(pageable);
+
+        return ResponsePageDto.of(200, "전체 주문 조회 성공", createOrderResponseDtoList(orderList));
+    }
+
+    // 주문 유저 조회 로직
+    public ResponsePageDto<OrderResponseDto> getUserOrder(int page, int size, String sort, boolean asc, UUID userId) {
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
+
+        Page<Order> orderList = orderRepository.findAllByUserId(userId, pageable);
+
+        return ResponsePageDto.of(200, "전체 주문 조회 성공", createOrderResponseDtoList(orderList));
+    }
+
+    // 주문 조회 시 Pageable를 만드는 로직
+    protected Pageable createCustomPageable(int page, int size, String sort, boolean asc) {
+        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(direction, sort);
+        return PageRequest.of(page, size, sortBy);
+    }
+
+    // 주문 조회 시 Page<OrderResponseDto>를 만드는 로직
+    protected Page<OrderResponseDto> createOrderResponseDtoList(Page<Order> orderList) {
         Page<OrderResponseDto> orderResponseDtoPage = orderList.map(order -> {
-            // 상품의 가격을 가져와 OrderProductDto로 만들어주는 loop - kyeonkim
             List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
                     OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
             ).toList();
@@ -89,8 +108,9 @@ public class OrderService {
 
             return OrderResponseDto.of(order, products, totalPrice);
         });
-        return ResponsePageDto.of(200, "주문 조회 성공", orderResponseDtoPage);
+        return orderResponseDtoPage;
     }
+
 
     // 주문 단건 조회 로직
     public ResponseSingleDto<OrderResponseDto> getFindByOrder(UUID orderId) {

@@ -33,7 +33,7 @@ public class OrderController {
     public ResponseEntity<CreateOrderResponseDto> createOrder(
             @RequestBody OrderRequestDto orderRequest,
             @AuthenticationPrincipal UserDetails userDetails
-            ) {
+    ) {
         return ResponseEntity.ok(orderService.createOrder(orderRequest, ((UserDetailsImpl) userDetails).getUserId()));
     }
 
@@ -47,6 +47,19 @@ public class OrderController {
             @RequestParam("asc") boolean asc
     ) {
         return ResponseEntity.ok(orderService.getOrder(page, size, sort, asc));
+    }
+
+    // 주문 유저 전체 조회
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/user")
+    public ResponseEntity<ResponsePageDto<OrderResponseDto>> getUserOrder(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sort") String sort,
+            @RequestParam("asc") boolean asc,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(orderService.getUserOrder(page, size, sort, asc, ((UserDetailsImpl) userDetails).getUserId()));
     }
 
     // 주문 단건 조회
