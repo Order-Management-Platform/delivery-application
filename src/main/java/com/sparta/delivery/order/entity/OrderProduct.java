@@ -24,10 +24,14 @@ public class OrderProduct {
     @Column(name = "product_id")
     private UUID productId;
 
-    public static OrderProduct create(final Order order, final UUID productId) {
+    @Column(name = "amount")
+    private int amount;
+
+    public static OrderProduct create(final Order order, final UUID productId, final int amount) {
         return OrderProduct.builder()
                 .order(order)
                 .productId(productId)
+                .amount(amount)
                 .build();
     }
 }

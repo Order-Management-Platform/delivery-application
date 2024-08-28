@@ -9,7 +9,7 @@ import java.util.UUID;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderProductRequestDto {
-    private UUID productId;
-    private int price;
+public class UpdateOrderRequestDto {
+    private UUID orderId;
+    private String orderStatus;
 }

@@ -12,6 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class OrderRequestDto {
     private UUID storeId;
-    private List<OrderProductRequestDto> product;
+    private List<OrderProductDto> product;
     private String orderType;
 }
