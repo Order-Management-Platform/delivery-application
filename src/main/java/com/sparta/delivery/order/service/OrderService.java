@@ -5,7 +5,6 @@ import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
-import com.sparta.delivery.product.entity.Product;
 import com.sparta.delivery.product.repository.ProductRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
@@ -63,7 +62,7 @@ public class OrderService {
         productRepository.findAllByStoreId(storeId).stream()
                 .filter(item -> Objects.equals(item.getId(), productId))
                 .findAny()
-                .ifPresent(product -> order.addProduct(create(order, productId, amount)));
+                .ifPresent(product -> order.addProduct(create(order, productId, product.getPrice(), amount)));
     }
 
     // 주문 조회 로직
@@ -76,17 +75,9 @@ public class OrderService {
         Page<OrderResponseDto> orderResponseDtoPage = orderList.map(order -> {
             UUID storeId = order.getStore().getId();
             // 상품의 가격을 가져와 OrderProductDto로 만들어주는 loop - kyeonkim
-            List<OrderProductDto> products = order.getProductList().stream().map(orderProduct -> {
-                UUID productId = orderProduct.getProductId();
-                int amount = orderProduct.getAmount();
-
-                Product product = productRepository.findById(productId)
-                        .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. ID: " + productId));
-
-                int price = product.getPrice();
-
-                return OrderProductDto.of(productId, price, amount);
-            }).toList();
+            List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
+                OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
+            ).toList();
             int totalPrice = products.stream().mapToInt(product -> product.getPrice() * product.getAmount()).sum();
             String address = order.getStore().getAddress();
 
