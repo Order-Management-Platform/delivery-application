@@ -1,6 +1,7 @@
 package com.sparta.delivery.region.service;
 
 import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.region.dto.RegionRequestDto;
 import com.sparta.delivery.region.dto.RegionResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
@@ -46,7 +47,7 @@ public class RegionService {
     @Transactional
     public ResponseDto updateRegion(RegionRequestDto request) {
         Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() ->
-                new NullPointerException("해당 지역을 찾을 수 없습니다."));
+                new NotFoundException("해당 지역을 찾을 수 없습니다."));
         region.update(request);
         return ResponseDto.of(200, "지역 수정 성공");
     }
@@ -55,7 +56,7 @@ public class RegionService {
     @Transactional
     public ResponseDto deleteRegion(UUID regionId, UUID userId) {
         Region region = regionRepository.findById(regionId).orElseThrow(() ->
-                new NullPointerException("해당 지역을 찾을 수 없습니다."));
+                new NotFoundException("해당 지역을 찾을 수 없습니다."));
         region.delete(userId);
         return ResponseDto.of(200, "지역 삭제 성공");
     }
