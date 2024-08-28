@@ -1,5 +1,6 @@
 package com.sparta.delivery.user.service;
 
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
@@ -38,7 +39,7 @@ public class UserService {
     public UserInfoResponse getUserInfo(UUID userId) {
         return userRepository.findById(userId)
                 .map(UserInfoResponse::of)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
     }
 
 
@@ -48,7 +49,7 @@ public class UserService {
         String encodedPassword = passwordEncoder.encode(updateUserRequest.getPassword());
         updateUserRequest.encodingPassword(encodedPassword);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
 
         user.updateUser(updateUserRequest);
     }
@@ -57,7 +58,7 @@ public class UserService {
     @Transactional
     public void deleteUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
 
         user.delete(userId);
     }

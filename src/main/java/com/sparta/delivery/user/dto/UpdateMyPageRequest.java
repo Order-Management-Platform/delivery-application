@@ -24,6 +24,6 @@ public class UpdateMyPageRequest {
     private String zipcode;
 
     public void encodingPassword(String encodedPassword) {
-
+        password = encodedPassword;
     }
 }

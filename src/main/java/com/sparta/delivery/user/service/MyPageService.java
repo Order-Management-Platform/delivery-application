@@ -1,5 +1,6 @@
 package com.sparta.delivery.user.service;
 
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.entity.User;
@@ -22,7 +23,7 @@ public class MyPageService {
     public UserInfoResponse myPageInfo(String email) {
         return userRepository.findByEmail(email)
                 .map(UserInfoResponse::of)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
     }
 
 
@@ -31,7 +32,7 @@ public class MyPageService {
         String encodedPassword = passwordEncoder.encode(updateMyPageRequest.getPassword());
         updateMyPageRequest.encodingPassword(encodedPassword);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
 
         user.updateMyPage(updateMyPageRequest);
     }
@@ -39,7 +40,7 @@ public class MyPageService {
     @Transactional
     public void deleteMyPage(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
 
         user.delete(userId);
     }
