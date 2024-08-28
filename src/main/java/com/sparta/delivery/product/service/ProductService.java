@@ -1,5 +1,7 @@
 package com.sparta.delivery.product.service;
 
+import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.product.dto.ProductCreateRequestDto;
 import com.sparta.delivery.product.dto.ProductListResponseDto;
 import com.sparta.delivery.product.dto.ProductModifyRequestDto;
@@ -28,8 +30,8 @@ public class ProductService {
 
     //상품 생성
     public void createProduct(ProductCreateRequestDto dto) {
-
-        Store store = storeRepository.findById(dto.getStoreId()).get();
+        Store store = storeRepository.findById(dto.getStoreId())
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
 
         Product product = Product.builder()
                 .name(dto.getName())
@@ -43,21 +45,24 @@ public class ProductService {
 
     //가게 내 상품 조회
     public  Page<ProductListResponseDto> getStoreProductList(UUID storeId,String keyWord, Pageable pageable) {
-
+        productRepository.findById(storeId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE.getMessage()));
         Page<Product> product = productRepository.findAllByStoreIdAndNameContaining(storeId,keyWord, pageable);
         return product.map(ProductListResponseDto::of);
     }
 
     //상품 상세 조회
     public ProductResponseDto getProduct(UUID productId) {
-        Product product = productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
         return ProductResponseDto.of(product);
     }
 
     //상품 수정
     @Transactional
     public void modifyProduct(UUID productId, ProductModifyRequestDto dto) {
-        Product product = productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
         product.modify(dto);
         productRepository.save(product);
     }
@@ -65,14 +70,16 @@ public class ProductService {
     //상품 상태
     @Transactional
     public void modifyProductStatus(UUID productId) {
-        Product product = productRepository.findById(productId).get();
+        Product product = productRepository.findById(productId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
         productRepository.modifyStatus(productId,!product.getSoldOut());
     }
 
     //상품 삭제
     @Transactional
     public void deleteProduct(UUID productId) {
-        Product product=productRepository.findById(productId).get();
+        Product product=productRepository.findById(productId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
         productRepository.delete(product);
     }
 
