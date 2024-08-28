@@ -40,13 +40,12 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
 
         // 주문 실패
         if (pgResponse.getStatusCode() != 200) {
-            order.getPayment().changePaymentByFail(PaymentStatus.FAILED);
-            // custom exception 만들기
+            //order.getPayment().changePaymentByFail(PaymentStatus.FAILED); custom exception 만들기
             throw new RuntimeException("결제 실패");
         }
 
         // 결제 상태 변경
-        order.getPayment().changePaymentBySuccess(PaymentStatus.COMPLETED, pgResponse.getPgTransactionId());
+        //order.getPayment().changePaymentBySuccess(PaymentStatus.COMPLETED, pgResponse.getPgTransactionId());
 
         return pgResponse;
 
