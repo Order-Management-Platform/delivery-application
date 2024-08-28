@@ -72,4 +72,9 @@ public class Order extends BaseEntity {
     public void cancel(UUID orderId) {
         this.markDeleted(orderId);
     }
+
+    //결제 엔티티 추가 메서드
+    public void addPayment(Payment payment) {
+        this.payment = payment;
+    }
 }
