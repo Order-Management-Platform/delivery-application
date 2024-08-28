@@ -88,7 +88,16 @@ public class OrderService {
 
         Page<Order> orderList = orderRepository.findAllByUserId(userId, pageable);
 
-        return ResponsePageDto.of(200, "전체 주문 조회 성공", createOrderResponseDtoList(orderList));
+        return ResponsePageDto.of(200, "주문 유저 조회 성공", createOrderResponseDtoList(orderList));
+    }
+
+    // 주문 가게 조회 로직
+    public ResponsePageDto<OrderResponseDto> getStoreOrder(int page, int size, String sort, boolean asc, UUID storeId) {
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
+
+        Page<Order> orderList = orderRepository.findAllByStoreId(storeId, pageable);
+
+        return ResponsePageDto.of(200, "주문 가게 조회 성공", createOrderResponseDtoList(orderList));
     }
 
     // 주문 조회 시 Pageable를 만드는 로직
@@ -142,4 +151,6 @@ public class OrderService {
         order.updateStatus("주문 취소"); // 상태값을 여기서 바꾸는게 맞는지 의문 - kyeonkim
         return ResponseDto.of(200, "주문 취소 성공");
     }
+
+
 }

@@ -62,6 +62,19 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getUserOrder(page, size, sort, asc, ((UserDetailsImpl) userDetails).getUserId()));
     }
 
+    // 주문 가게 전체 조회
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/store")
+    public ResponseEntity<ResponsePageDto<OrderResponseDto>> getStoreOrder(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sort") String sort,
+            @RequestParam("asc") boolean asc,
+            @RequestParam("storeId") UUID storeId
+    ) {
+        return ResponseEntity.ok(orderService.getStoreOrder(page, size, sort, asc, storeId));
+    }
+
     // 주문 단건 조회
     // 추가적으로 조회 요청을 보낸 사람이 해당 주문을 한게 맞는지 확인하는 작업이 필요 - kyeonkim
     @PreAuthorize("hasRole('CUSTOMER')")
