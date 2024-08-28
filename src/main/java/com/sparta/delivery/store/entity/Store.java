@@ -42,6 +42,7 @@ public class Store extends BaseEntity {
     @OneToMany(mappedBy="store",
             fetch = FetchType.LAZY,
             orphanRemoval = true)
+    @Builder.Default
     private List<Product> productList = new ArrayList<Product>();
 
     private String name;
