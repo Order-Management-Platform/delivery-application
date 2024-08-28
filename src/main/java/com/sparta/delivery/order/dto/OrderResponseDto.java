@@ -15,6 +15,7 @@ import java.util.UUID;
 @Builder
 public class OrderResponseDto {
     private UUID orderId;
+    private UUID userId;
     private UUID storeId;
     private List<OrderProductDto> product;
     private String orderType;
@@ -24,18 +25,17 @@ public class OrderResponseDto {
 
     public static OrderResponseDto of(
             final Order order,
-            final UUID storeId,
             final List<OrderProductDto> products,
-            final int totalPrice,
-            final String address
+            final int totalPrice
     ) {
         return OrderResponseDto.builder()
                 .orderId(order.getId())
-                .storeId(storeId)
+                .userId(order.getUser().getId())
+                .storeId(order.getStore().getId())
                 .product(products)
                 .orderType(order.getType())
                 .totalPrice(totalPrice)
-                .address(address)
+                .address(order.getStore().getAddress())
                 .orderStatus(order.getOrderStatus())
                 .build();
     }

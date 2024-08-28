@@ -2,12 +2,17 @@ package com.sparta.delivery.order.controller;
 
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.order.dto.CreateOrderResponseDto;
 import com.sparta.delivery.order.dto.OrderRequestDto;
 import com.sparta.delivery.order.dto.OrderResponseDto;
 import com.sparta.delivery.order.dto.UpdateOrderRequestDto;
 import com.sparta.delivery.order.service.OrderService;
+import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,12 +28,17 @@ public class OrderController {
     }
 
     // 주문 생성
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
-    public ResponseEntity<CreateOrderResponseDto> createOrder(@RequestBody OrderRequestDto orderRequest) {
-        return ResponseEntity.ok(orderService.createOrder(orderRequest));
+    public ResponseEntity<CreateOrderResponseDto> createOrder(
+            @RequestBody OrderRequestDto orderRequest,
+            @AuthenticationPrincipal UserDetails userDetails
+            ) {
+        return ResponseEntity.ok(orderService.createOrder(orderRequest, ((UserDetailsImpl) userDetails).getUserId()));
     }
 
-    // 주문 조회
+    // 주문 전체 조회
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getOrder(
             @RequestParam("page") int page,
@@ -39,13 +49,25 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrder(page, size, sort, asc));
     }
 
+    // 주문 단건 조회
+    // 추가적으로 조회 요청을 보낸 사람이 해당 주문을 한게 맞는지 확인하는 작업이 필요 - kyeonkim
+    @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ResponseSingleDto<OrderResponseDto>> getFindByOrder(@PathVariable(name = "orderId") UUID orderId) {
+        return ResponseEntity.ok(orderService.getFindByOrder(orderId));
+    }
+
     // 주문 상태 수정
+    // orderId > storeId > userId 를 가져와서 토큰에 있는 userId와 동일한 지 비교하는 로직 필요 - kyeonkim
+    @PreAuthorize("hasRole('OWNER')")
     @PutMapping
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody UpdateOrderRequestDto request) {
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
     }
 
     // 주문 취소
+    // 주문을 취소한 유저가 요청을 보낸 유저가 맞는 확인하는 로직 필요 - kyeonkim
+    @PreAuthorize("hasRole('CUSTOMER')")
     @DeleteMapping("/{orderId}")
     public ResponseEntity<ResponseDto> cancelOrder(@PathVariable(name = "orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.cancelOrder(orderId));
