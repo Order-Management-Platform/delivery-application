@@ -150,11 +150,11 @@ public class OrderService {
 
     // 주문 취소 로직
     @Transactional
-    public ResponseDto cancelOrder(UUID orderId) {
+    public ResponseDto cancelOrder(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException("해당 주문을 찾을 수 없습니다."));
-        order.cancel(orderId); // 유저 아이디로 변경해야함 - kyeonkim
-        order.updateStatus("주문 취소"); // 상태값을 여기서 바꾸는게 맞는지 의문 - kyeonkim
+        order.cancel(userId);
+        order.updateStatus("주문 취소");
         return ResponseDto.of(200, "주문 취소 성공");
     }
 

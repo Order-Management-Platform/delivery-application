@@ -95,7 +95,10 @@ public class OrderController {
     // 주문을 취소한 유저가 요청을 보낸 유저가 맞는 확인하는 로직 필요 - kyeonkim
     @PreAuthorize("hasRole('CUSTOMER')")
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<ResponseDto> cancelOrder(@PathVariable(name = "orderId") UUID orderId) {
-        return ResponseEntity.ok(orderService.cancelOrder(orderId));
+    public ResponseEntity<ResponseDto> cancelOrder(
+            @PathVariable(name = "orderId") UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.ok(orderService.cancelOrder(orderId, userDetails.getUserId()));
     }
 }
