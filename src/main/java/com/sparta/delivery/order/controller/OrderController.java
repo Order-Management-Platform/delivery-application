@@ -84,8 +84,7 @@ public class OrderController {
     }
 
     // 주문 상태 수정
-    // orderId > storeId > userId 를 가져와서 토큰에 있는 userId와 동일한 지 비교하는 로직 필요 - kyeonkim
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER')and @securityUtilKyeonkim.checkUpdateOrderOwnership(#request.orderId, authentication)")
     @PutMapping
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody UpdateOrderRequestDto request) {
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
