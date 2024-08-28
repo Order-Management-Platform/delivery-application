@@ -70,7 +70,12 @@ public class OrderService {
         productRepository.findAllByStoreId(storeId).stream()
                 .filter(item -> Objects.equals(item.getId(), productId))
                 .findAny()
-                .ifPresent(product -> order.addProduct(create(order, productId, product.getPrice(), amount)));
+                .ifPresentOrElse(
+                        product -> order.addProduct(create(order, productId, product.getPrice(), amount)),
+                        () -> {
+                            throw new NullPointerException("가게에서 상품을 찾을 수 없습니다. 상품 ID: " + productId);
+                        }
+                );
     }
 
     // 주문 전체 조회 로직
