@@ -33,7 +33,7 @@ public class AiService {
      */
     public String getAiDescription(String name) throws JsonProcessingException {
 
-        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyBp710KTVAi6VbmGzRnny3dYum2JzFijbs";
+        String apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key="+key;
         String jsonString = "{\"contents\":[{\"parts\":[{\"text\":\"텍스트 언어 - korean, 맥락 -만두를 홍보하는 문구를 작성해줘. 예를 들어 갓 빚은 뜨끈한 만두로 속까지 따뜻하게 채워보세요!와 같은 문장으로 작성해줘\"}]}]}";
 
         HttpHeaders headers = new HttpHeaders();
