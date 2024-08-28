@@ -28,7 +28,7 @@ public class OrderController {
     }
 
     // 주문 생성
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("@securityUtilKyeonkim.checkOrderPermission(#orderRequest.orderType, authentication)")
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(
             @RequestBody OrderRequestDto orderRequest,
