@@ -23,7 +23,6 @@ import java.util.UUID;
 @Builder
 public class Store extends BaseEntity {
 
-    //todo : 정수형, uuid사용
     @Id
     @GeneratedValue
     @Column(nullable = false)
