@@ -3,6 +3,7 @@ package com.sparta.delivery.order.service;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
@@ -48,9 +49,9 @@ public class OrderService {
     @Transactional
     public CreateOrderResponseDto createOrder(OrderRequestDto request, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NullPointerException("해당 유저를 찾을 수 없습니다."));
+                new NotFoundException("해당 유저를 찾을 수 없습니다."));
         Store store = storeRepository.findById(request.getStoreId()).orElseThrow(() ->
-                new NullPointerException("해당 가게를 찾을 수 없습니다."));
+                new NotFoundException("해당 가게를 찾을 수 없습니다."));
         Order createOrder = orderRepository.save(Order.create(request, user, store));
 
         for (OrderProductDto product : request.getProduct()) {
@@ -73,7 +74,7 @@ public class OrderService {
                 .ifPresentOrElse(
                         product -> order.addProduct(create(order, productId, product.getPrice(), amount)),
                         () -> {
-                            throw new NullPointerException("가게에서 상품을 찾을 수 없습니다. 상품 ID: " + productId);
+                            throw new NotFoundException("가게에서 상품을 찾을 수 없습니다. 상품 ID: " + productId);
                         }
                 );
     }
@@ -129,7 +130,7 @@ public class OrderService {
     // 주문 단건 조회 로직
     public ResponseSingleDto<OrderResponseDto> getFindByOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                new NotFoundException("해당 주문을 찾을 수 없습니다."));
         List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
                 OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
         ).toList();
@@ -142,7 +143,7 @@ public class OrderService {
     @Transactional
     public ResponseDto updateOrderStatus(UpdateOrderRequestDto request) {
         Order order = orderRepository.findById(request.getOrderId()).orElseThrow(() ->
-                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                new NotFoundException("해당 주문을 찾을 수 없습니다."));
         order.updateStatus(request.getOrderStatus());
         return ResponseDto.of(200, "주문 상태 수정 성공");
     }
@@ -151,7 +152,7 @@ public class OrderService {
     @Transactional
     public ResponseDto cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                new NotFoundException("해당 주문을 찾을 수 없습니다."));
         order.cancel(orderId); // 유저 아이디로 변경해야함 - kyeonkim
         order.updateStatus("주문 취소"); // 상태값을 여기서 바꾸는게 맞는지 의문 - kyeonkim
         return ResponseDto.of(200, "주문 취소 성공");
