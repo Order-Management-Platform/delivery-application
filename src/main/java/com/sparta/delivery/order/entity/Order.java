@@ -4,6 +4,7 @@ import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.order.dto.OrderRequestDto;
 import com.sparta.delivery.payment.entity.Payment;
 import com.sparta.delivery.store.entity.Store;
+import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,6 +29,10 @@ public class Order extends BaseEntity {
     @Column(name = "order_id", columnDefinition = "BINARY(16)")
     private UUID id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @OneToOne
     @JoinColumn(name = "payment_id")
     private Payment payment;
@@ -48,8 +53,9 @@ public class Order extends BaseEntity {
     @Column(name = "order_status")
     private String orderStatus;
 
-    public static Order create(OrderRequestDto request, Store store) {
+    public static Order create(OrderRequestDto request, User user, Store store) {
         return Order.builder()
+                .user(user)
                 .store(store)
                 .productList(new ArrayList<>())
                 .type(request.getOrderType())
