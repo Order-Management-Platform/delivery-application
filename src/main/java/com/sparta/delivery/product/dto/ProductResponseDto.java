@@ -16,20 +16,19 @@ public class ProductResponseDto {
     private String name;
     private int price;
     private String description;
-    private UUID store;
+    private UUID storeId;
     private LocalDateTime createdAt;
 
-    public ProductResponseDto(Product product) {
-        this.id = product.getId();
-        this.name=product.getName();
-        this.price = product.getPrice();
-        this.description = product.getDescription();
-        this.store = product.getStore().getId();
-        this.createdAt = product.getCreatedAt();
+    public static ProductResponseDto of(Product product) {
+        return ProductResponseDto.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .description(product.getDescription())
+                .storeId(product.getStore().getId())
+                .createdAt(product.getCreatedAt())
+                .build();
     }
 }
 
-//todo : 정적 팩토리 메서드
-/*public static ProductResponseDto from(Product product){
-    return new ProductResponseDto(product);
-}*/
+
