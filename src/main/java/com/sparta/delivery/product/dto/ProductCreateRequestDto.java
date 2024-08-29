@@ -12,12 +12,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductCreateRequestDto {
-    @NotBlank(message="이름은 필수 입력입니다.")
     private String name;
-    @Min(1000)
     private int price;
     private String description;
-    @NotBlank(message="등록할 음식점 id은 필수 입력입니다.")
-    private UUID StoreId;
 
 }

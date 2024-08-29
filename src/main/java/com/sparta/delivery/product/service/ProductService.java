@@ -29,8 +29,8 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     //상품 생성
-    public void createProduct(ProductCreateRequestDto dto) {
-        Store store = storeRepository.findById(dto.getStoreId())
+    public void createProduct(ProductCreateRequestDto dto,UUID storeId) {
+        Store store = storeRepository.findById(storeId)
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
 
         Product product = Product.builder()
