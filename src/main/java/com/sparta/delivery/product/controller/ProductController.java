@@ -30,7 +30,7 @@ public class ProductController {
     /**
      * 음식점 상품 추가
      */
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    //@PreAuthorize("hasRole('MANAGER')")
     @PostMapping
     public ResponseDto createProduct(@RequestBody ProductCreateRequestDto dto) {
         productService.createProduct(dto);
@@ -58,7 +58,6 @@ public class ProductController {
     /**
      * 상품 상세조회
      */
-    //@PreAuthorize("isAuthenticated()")
     @GetMapping("/{productId}")
     public ResponseSingleDto getProduct(@PathVariable UUID productId) {
         ProductResponseDto data=productService.getProduct(productId);
@@ -67,8 +66,9 @@ public class ProductController {
 
     /**
      *  상품 수정
+     *  해당 상품 음식점의 사장일 경우
      */
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    //@PreAuthorize("hasRole('OWNER') and (@sunmiSecurityUtil.isProductOwner(authentication,#productId)")
     @PutMapping("/{productId}")
     public ResponseDto ModifyProduct(@PathVariable UUID productId,
                                             @RequestBody ProductModifyRequestDto dto) {
@@ -79,7 +79,7 @@ public class ProductController {
     /**
      * 상품 상태 변경
      */
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    //@PreAuthorize("hasRole('OWNER') and (@sunmiSecurityUtil.isProductOwner(authentication,#productId)")
     @PatchMapping("/{productId}")
     public ResponseDto switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
@@ -89,7 +89,7 @@ public class ProductController {
     /**
      * 상품 삭제
      */
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    //@PreAuthorize("hasRole('OWNER') and (@sunmiSecurityUtil.isProductOwner(authentication,#productId)")
     @DeleteMapping("/{productId}")
     public ResponseDto deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId);

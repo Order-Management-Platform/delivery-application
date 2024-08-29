@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,7 @@ public class StoreController {
     private final StoreRepository storeRepository;
 
     //관리자 페이지 - 가게 생성
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping
     public ResponseDto createStore(@RequestBody Map<String , String> map) {
         Store store = Store.builder()
@@ -68,7 +70,7 @@ public class StoreController {
      * 음식점 사장님 조회
      */
     //owener - 지역 파라미터 필수 , owner도 getStoreList()메서드에 접근 가능
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/ownerList")
     public List<Store> getStoreOwnerList(Principal principal){
         return storeService.getOwnerStoreList(principal);
@@ -78,7 +80,6 @@ public class StoreController {
     /**
      *  음식점 상세조회
      */
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
     @GetMapping("/{storeId}")
     public ResponseSingleDto getStore(@PathVariable UUID storeId) {
         StoreGetResponseDto data= storeService.getStore(storeId);
@@ -88,7 +89,7 @@ public class StoreController {
     /**
      * 음식점 수정
      */
-    //@PreAuthorize("isAuthenticated() and hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#storeId)")
     @PutMapping("/{storeId}")
     public ResponseDto ModifyStore(@PathVariable UUID storeId, @RequestBody StoreModifyRequestDto dto) {
         storeService.modifyStore(storeId, dto);
@@ -98,6 +99,7 @@ public class StoreController {
     /**
      * 음식점 삭제
      */
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#storeId)")
     @DeleteMapping("/{storeId}")
     public ResponseDto deleteStore(@PathVariable UUID storeId) {
         storeService.deleteStore(storeId);
