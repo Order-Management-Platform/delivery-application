@@ -72,8 +72,9 @@ public class StoreController {
     //owener - 지역 파라미터 필수 , owner도 getStoreList()메서드에 접근 가능
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/ownerList")
-    public List<Store> getStoreOwnerList(Principal principal){
-        return storeService.getOwnerStoreList(principal);
+    public ResponseSingleDto getStoreOwnerList(Principal principal){
+        List<Store> data=storeService.getOwnerStoreList(principal);
+        return ResponseSingleDto.of(ResponseCode.SUCC_STORE_OWNER_LIST_GET, data);
 
     }
 
