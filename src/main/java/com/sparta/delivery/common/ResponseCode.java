@@ -7,6 +7,12 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ResponseCode {
+    // 지역 성공
+    SUCC_REGION_CREATE(HttpStatus.OK.value(),"지역 생성 성공"),
+    SUCC_REGION_GET(HttpStatus.OK.value(),"지역 조회 성공"),
+    SUCC_REGION_UPDATE(HttpStatus.OK.value(),"지역 수정 성공"),
+    SUCC_REGION_DELETE(HttpStatus.OK.value(),"지역 삭제 성공"),
+
     // 주문 성공
     SUCC_ORDER_CREATE(HttpStatus.OK.value(),"주문 생성 성공"),
     SUCC_ORDER_LIST_GET(HttpStatus.OK.value(),"전제 주문 목록 조회 성공"),

@@ -1,5 +1,6 @@
 package com.sparta.delivery.region.service;
 
+import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.region.dto.RegionRequestDto;
@@ -29,7 +30,7 @@ public class RegionService {
     @Transactional
     public ResponseDto createRegion(String regionName) {
         regionRepository.save(Region.create(regionName));
-        return ResponseDto.of(200, "지역 생성 성공");
+        return ResponseDto.of(ResponseCode.SUCC_REGION_CREATE);
     }
 
     // 지역 조회 로직
@@ -40,24 +41,24 @@ public class RegionService {
 
         Page<Region> regionList = regionRepository.findAll(pageable);
         Page<RegionResponseDto> regionResponseDtoPage = regionList.map(RegionResponseDto::of);
-        return ResponsePageDto.of(200, "지역 조회 성공", regionResponseDtoPage);
+        return ResponsePageDto.of(ResponseCode.SUCC_REGION_GET, regionResponseDtoPage);
     }
 
     // 지역 수정 로직
     @Transactional
     public ResponseDto updateRegion(RegionRequestDto request) {
         Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() ->
-                new NotFoundException("해당 지역을 찾을 수 없습니다."));
+                new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
         region.update(request);
-        return ResponseDto.of(200, "지역 수정 성공");
+        return ResponseDto.of(ResponseCode.SUCC_REGION_UPDATE);
     }
 
     // 지역 삭제 로직
     @Transactional
     public ResponseDto deleteRegion(UUID regionId, UUID userId) {
         Region region = regionRepository.findById(regionId).orElseThrow(() ->
-                new NotFoundException("해당 지역을 찾을 수 없습니다."));
+                new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
         region.delete(userId);
-        return ResponseDto.of(200, "지역 삭제 성공");
+        return ResponseDto.of(ResponseCode.SUCC_REGION_DELETE);
     }
 }
