@@ -50,4 +50,12 @@ public class HelpService {
 
         return ResponseDto.of(ResponseCode.SUCC_HELP_UPDATE);
     }
+
+    @Transactional
+    public ResponseDto deleteHelp(UUID helpId, UUID userId) {
+        Help help = helpRepository.findById(helpId).orElseThrow(() ->
+                new NotFoundException(ResponseCode.NOT_FOUND_HELP));
+        help.markDeleted(userId);
+        return ResponseDto.of(ResponseCode.SUCC_HELP_DELETE);
+    }
 }
