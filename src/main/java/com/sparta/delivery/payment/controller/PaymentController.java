@@ -1,11 +1,12 @@
 package com.sparta.delivery.payment.controller;
 
+import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.payment.dto.CancelPaymentRequest;
 import com.sparta.delivery.payment.dto.PaymentRequest;
 import com.sparta.delivery.payment.dto.PaymentInfoResponse;
-import com.sparta.delivery.payment.dto.PgResponse;
 import com.sparta.delivery.payment.service.PaymentGatewayService;
 import com.sparta.delivery.payment.service.PaymentService;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
@@ -34,8 +35,8 @@ public class PaymentController {
     public ResponseEntity<ResponseDto> createPayment(@RequestBody PaymentRequest paymentRequest,
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         UUID userId = userDetails.getUserId();
-        PgResponse response = paymentGatewayService.paymentByCallback(userId, paymentRequest);
-        return ResponseEntity.ok(ResponseDto.of(200, "payment successful 결제 ID : " + response.getPgTransactionId()));
+        paymentGatewayService.paymentByCallback(userId, paymentRequest);
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PAYMENT_CREATE));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -46,17 +47,17 @@ public class PaymentController {
             sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
         Page<PaymentInfoResponse> payments = paymentService.getPayments(pageable);
-        return ResponseEntity.ok(ResponsePageDto.of(200,"조회 성공",payments));
+        return ResponseEntity.ok(ResponsePageDto.of(ResponseCode.SUCC_PAYMENT_LIST_GET,payments));
     }
+
 
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/{paymentId}")
-    public ResponseEntity<PaymentInfoResponse> getPayment(@PathVariable("paymentId") UUID paymentId) {
-        //고객은 본인 결제내역만 보이게
-        //사장님은 ..?
-        //관리자는 다보이게
-        PaymentInfoResponse paymentInfoResponse = paymentService.getPayment(paymentId);
-        return ResponseEntity.ok(paymentInfoResponse);
+    public ResponseEntity<ResponseSingleDto<PaymentInfoResponse>> getPayment(@PathVariable("paymentId") UUID paymentId,
+                                                                             @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        UUID userId = userDetails.getUserId();
+        PaymentInfoResponse paymentInfoResponse = paymentService.getPayment(userId, paymentId);
+        return ResponseEntity.ok(ResponseSingleDto.of(ResponseCode.SUCC_PAYMENT_GET, paymentInfoResponse));
     }
 
 
@@ -65,7 +66,7 @@ public class PaymentController {
     public ResponseEntity<ResponseDto> cancelPayment(@PathVariable("paymentId") UUID paymentId,
                                                      @RequestBody CancelPaymentRequest cancelPaymentRequest) {
         paymentService.updatePayment(paymentId, cancelPaymentRequest);
-        return ResponseEntity.ok(ResponseDto.of(200, "결제가 취소 되었습니다."));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PAYMENT_CANCEL));
     }
 
 
@@ -75,7 +76,7 @@ public class PaymentController {
                                                      @AuthenticationPrincipal UserDetailsImpl userDetails) {
         UUID userId = userDetails.getUserId();
         paymentService.deletePayment(paymentId, userId);
-        return ResponseEntity.ok(ResponseDto.of(200, "결제가 삭제 되었습니다."));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PAYMENT_DELETE));
     }
 
 }
