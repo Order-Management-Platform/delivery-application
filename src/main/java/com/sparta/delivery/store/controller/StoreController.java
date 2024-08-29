@@ -32,16 +32,12 @@ public class StoreController {
 
     //todo : 생성한 resource가 맞는지 확인하는 로직 추가
     private final StoreService storeService;
-    private final StoreRepository storeRepository;
 
     //관리자 페이지 - 가게 생성
     @PreAuthorize("hasRole('MANAGER')")
-    @PostMapping
-    public ResponseDto createStore(@RequestBody Map<String , String> map) {
-        Store store = Store.builder()
-                .name(map.get("name"))
-                .build();
-        storeRepository.save(store);
+    @PostMapping("/{userId}")
+    public ResponseDto createStore(@PathVariable UUID userId, @RequestBody Map<String, String> map) {
+        storeService.createStore(userId, map);
         return ResponseDto.of(ResponseCode.SUCC_STORE_CREATE);
     }
 
@@ -90,7 +86,7 @@ public class StoreController {
     /**
      * 음식점 수정
      */
-    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#storeId)")
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isStoreOwner(authentication,#storeId)")
     @PutMapping("/{storeId}")
     public ResponseDto ModifyStore(@PathVariable UUID storeId, @RequestBody StoreModifyRequestDto dto) {
         storeService.modifyStore(storeId, dto);
@@ -100,7 +96,7 @@ public class StoreController {
     /**
      * 음식점 삭제
      */
-    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#storeId)")
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isStoreOwner(authentication,#storeId)")
     @DeleteMapping("/{storeId}")
     public ResponseDto deleteStore(@PathVariable UUID storeId) {
         storeService.deleteStore(storeId);
