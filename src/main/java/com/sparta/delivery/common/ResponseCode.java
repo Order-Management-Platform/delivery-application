@@ -26,24 +26,17 @@ public enum ResponseCode {
     //ai 성공
     SUCC_AI_GET(HttpStatus.OK.value(), "ai 음식 설명 요청 성공"),
 
-    //상품 실패
-    NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
-    //상품 실패
-    NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
-
-
-
     //entity 조회 실패
-    USER_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "회원이 존재하지 않습니다."),
-    CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "카테고리가 존재하지 않습니다."),
-    PAYMENT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(), "결제내역이 존재하지 않습니다."),
-    ORDER_NOU_FOUND(HttpStatus.BAD_REQUEST.value(), "주문내역이 존재하지 않습니다."),
-    PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST.value(),"상품이 존재하지 않습니다."),
-    STORE_NOT_FOUND(HttpStatus.BAD_REQUEST.value(),"상점이 존재하지 않습니다."),
-    REGiON_NOT_FOUND(HttpStatus.BAD_REQUEST.value(),"지역이 존재하지 않습니다. "),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND.value(), "회원이 존재하지 않습니다."),
+    NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND.value(), "카테고리가 존재하지 않습니다."),
+    NOT_FOUND_PAYMENT(HttpStatus.NOT_FOUND.value(), "결제내역이 존재하지 않습니다."),
+    NOT_FOUND_ORDER(HttpStatus.NOT_FOUND.value(), "주문내역이 존재하지 않습니다."),
+    NOT_FOUND_REGiON(HttpStatus.NOT_FOUND.value(),"지역이 존재하지 않습니다. "),
+    NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
+    NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
 
     //잘못된 요청
-    BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못 된 요청입니다.")
+    BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.")
 
 
     ;
