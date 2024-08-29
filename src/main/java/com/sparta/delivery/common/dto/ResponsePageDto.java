@@ -17,6 +17,7 @@ public class ResponsePageDto<T> {
     private List<T> content;
     private CustomPageable pageable;
 
+    // 삭제 예정
     public static <T> ResponsePageDto<T> of(final int status, final String message, final Page<T> page) {
         return ResponsePageDto.<T>builder()  // 제네릭 타입 명시
                 .status(status)
@@ -29,6 +30,7 @@ public class ResponsePageDto<T> {
                 ))
                 .build();
     }
+
     public static <T> ResponsePageDto<T> of(ResponseCode resCode,final Page<T> page) {
         return ResponsePageDto.<T>builder()  // 제네릭 타입 명시
                 .status(resCode.getStatus())

@@ -51,7 +51,8 @@ public class Order extends BaseEntity {
     private boolean isHidden;
 
     @Column(name = "order_status")
-    private String orderStatus;
+    @Enumerated(value = EnumType.STRING)
+    private OrderStatus orderStatus;
 
     public static Order create(OrderRequestDto request, User user, Store store) {
         return Order.builder()
@@ -60,7 +61,7 @@ public class Order extends BaseEntity {
                 .productList(new ArrayList<>())
                 .type(request.getOrderType())
                 .isHidden(false)
-                .orderStatus("결제 요청 중")
+                .orderStatus(OrderStatus.ORDER_CREATED)
                 .build();
     }
 
@@ -70,8 +71,18 @@ public class Order extends BaseEntity {
     }
 
     // 주문 상태 수정 메서드
-    public void updateStatus(String orderStatus) {
+    public void updateStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    // 결제 완료 상태 메서드
+    public void paymentCompleted() {
+        this.orderStatus = OrderStatus.PAYMENT_COMPLETED;
+    }
+
+    // 결제 실패 상태 메서드
+    public void paymentFailed() {
+        this.orderStatus = OrderStatus.PAYMENT_FAILED;
     }
 
     // 주문 취소 메서드
