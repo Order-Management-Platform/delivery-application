@@ -49,7 +49,6 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers("/user/signUp").permitAll()
                                 .requestMatchers("/user/signIn").permitAll()
-                                .requestMatchers("/**").permitAll()
                 // 여기서 권한 별 접속 가능 여부 설정
                                 .anyRequest().authenticated() //
 
@@ -67,6 +66,7 @@ public class SecurityConfig {
         return web -> web.ignoring()
                 .requestMatchers(PathRequest.toH2Console());
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
