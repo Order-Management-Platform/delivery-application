@@ -1,5 +1,8 @@
 package com.sparta.delivery.user.controller;
 
+import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.common.dto.ErrorsResponseDto;
+import com.sparta.delivery.common.dto.FieldError;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.user.dto.SignUpRequest;
@@ -7,13 +10,11 @@ import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.user.service.UserService;
-import jakarta.validation.executable.ValidateOnExecution;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,19 +38,17 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<ResponseDto> createUser(@Validated @RequestBody SignUpRequest signUpRequest,
-                                                  BindingResult bindingResult) {
+    public ResponseEntity<?> createUser(@Validated @RequestBody SignUpRequest signUpRequest,
+                                        BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getAllErrors().stream().findFirst().get().getDefaultMessage();
             return ResponseEntity
                     .badRequest()
-                    .body(ResponseDto.of(HttpStatus.BAD_REQUEST.value(), errorMessage));
+                    .body(ErrorsResponseDto.of(ResponseCode.BAD_REQUEST, FieldError.of(bindingResult)));
         }
 
         userService.createUser(signUpRequest);
-        return ResponseEntity.ok(ResponseDto.of(200,"signUp successful"));
+        return ResponseEntity.ok(ResponseDto.of(200, "signUp successful"));
     }
-
 
 
     @PreAuthorize("hasRole('MANAGER')")
@@ -57,13 +56,13 @@ public class UserController {
     public ResponseEntity<ResponsePageDto<UserInfoResponse>> getUsers(
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<UserInfoResponse> users = userService.getUsers(pageable);
-        return ResponseEntity.ok(ResponsePageDto.of(200, "조회 성공",users));
+        return ResponseEntity.ok(ResponsePageDto.of(200, "조회 성공", users));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{userId}")
     public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable("userId") UUID userId,
-                                                    @AuthenticationPrincipal UserDetailsImpl userDetails) {
+                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
         UserInfoResponse userResponse = userService.getUserInfo(userId);
         return ResponseEntity.ok(userResponse);
     }
@@ -71,14 +70,14 @@ public class UserController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{userId}")
-    public ResponseEntity<ResponseDto> updateUser(@Validated @PathVariable("userId") UUID userId,
-                                                  BindingResult bindingResult,
-                                                  @RequestBody UpdateUserRequest updateUserRequest) {
+    public ResponseEntity<?> updateUser(@PathVariable("userId") UUID userId,
+                                        @Validated @RequestBody UpdateUserRequest updateUserRequest,
+                                        BindingResult bindingResult)
+    {
         if (bindingResult.hasErrors()) {
-            String errorMessage = bindingResult.getAllErrors().stream().findFirst().get().getDefaultMessage();
             return ResponseEntity
                     .badRequest()
-                    .body(ResponseDto.of(HttpStatus.BAD_REQUEST.value(),errorMessage));
+                    .body(ErrorsResponseDto.of(ResponseCode.BAD_REQUEST, FieldError.of(bindingResult)));
         }
         userService.updateUser(userId, updateUserRequest);
         return ResponseEntity.ok(ResponseDto.of(200, "user update successful"));
@@ -92,4 +91,6 @@ public class UserController {
         userService.deleteUser(userId);
         return ResponseEntity.ok(ResponseDto.of(200, "user deleted successful."));
     }
+
+
 }
