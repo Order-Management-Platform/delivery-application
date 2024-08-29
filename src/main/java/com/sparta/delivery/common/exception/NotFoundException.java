@@ -8,6 +8,10 @@ public class NotFoundException extends IllegalArgumentException{
 
     private ErrorCode errorCode;
 
+    public NotFoundException(String message) {
+        super(message);
+    }
+
     public NotFoundException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;

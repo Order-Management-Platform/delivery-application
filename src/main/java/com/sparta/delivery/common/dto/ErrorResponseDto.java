@@ -16,6 +16,14 @@ public class ErrorResponseDto {
     private final int status;
     private final String errorMessage;
 
+    public static ErrorResponseDto of(String errorMessage) {
+        return ErrorResponseDto.builder()
+                .status(400)
+                .errorMessage(errorMessage)
+                .build();
+    }
+
+
     public static ErrorResponseDto of(final ErrorCode errorCode) {
         return ErrorResponseDto.builder()
                 .status(errorCode.getStatus())
