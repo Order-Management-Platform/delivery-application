@@ -3,6 +3,7 @@ package com.sparta.delivery.payment.service;
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.entity.Order;
+import com.sparta.delivery.order.entity.OrderProduct;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.payment.dto.PaymentRequest;
 import com.sparta.delivery.payment.dto.PgResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -28,13 +30,16 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
 
     @Override
     public PgResponse paymentByCallback(UUID userId, PaymentRequest request) {
-        // payment 조인 조회로 수정하기
         Order order = orderRepository.findById(request.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
-        Payment payment = Payment.create(user, 10000L);
+
+        Long totalPrice = order.getProductList().stream().mapToLong(OrderProduct::getPrice).sum();
+
+
+        Payment payment = Payment.create(user, order.getId(), totalPrice);
         order.addPayment(payment);
 
         Payment savedPayment = paymentRepository.save(payment);

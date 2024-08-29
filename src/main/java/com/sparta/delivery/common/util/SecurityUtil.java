@@ -102,7 +102,7 @@ public class SecurityUtil {
         log.info(" 음식점 사장이 맞는지 검사");
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         List<Store> storeList = storeRepository.findAllByUser(user);
 
@@ -122,12 +122,12 @@ public class SecurityUtil {
 
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         List<Store> storeList = storeRepository.findAllByUser(user);
 
         Product product = productRepository.findById(id)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
 
         boolean result=false;
         for (Store store : storeList) {
