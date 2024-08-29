@@ -23,7 +23,8 @@ public enum ResponseCode {
     SUCC_STORE_MODIFY(HttpStatus.OK.value(),"음식점 수정 성공"),
     SUCC_STORE_DELETE(HttpStatus.OK.value(),"음식점 삭제 성공"),
 
-
+    //ai 성공
+    SUCC_AI_GET(HttpStatus.OK.value(), "ai 음식 설명 요청 성공"),
 
     //상품 실패
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
@@ -31,7 +32,7 @@ public enum ResponseCode {
     NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
     ;
 
-    private int status;
-    private String message;
+    private final int status;
+    private final String message;
 
 }
