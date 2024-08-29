@@ -1,6 +1,7 @@
 package com.sparta.delivery.order.dto;
 
 import com.sparta.delivery.order.entity.Order;
+import com.sparta.delivery.order.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class OrderResponseDto {
     private String orderType;
     private int totalPrice;
     private String address;
-    private String orderStatus;
+    private OrderStatus orderStatus;
 
     public static OrderResponseDto of(
             final Order order,

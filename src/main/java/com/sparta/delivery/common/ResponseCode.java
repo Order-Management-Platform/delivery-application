@@ -7,6 +7,21 @@ import org.springframework.http.HttpStatus;
 @Getter
 @AllArgsConstructor
 public enum ResponseCode {
+    // 지역 성공
+    SUCC_REGION_CREATE(HttpStatus.OK.value(),"지역 생성 성공"),
+    SUCC_REGION_GET(HttpStatus.OK.value(),"지역 조회 성공"),
+    SUCC_REGION_UPDATE(HttpStatus.OK.value(),"지역 수정 성공"),
+    SUCC_REGION_DELETE(HttpStatus.OK.value(),"지역 삭제 성공"),
+
+    // 주문 성공
+    SUCC_ORDER_CREATE(HttpStatus.OK.value(),"주문 생성 성공"),
+    SUCC_ORDER_LIST_GET(HttpStatus.OK.value(),"전제 주문 목록 조회 성공"),
+    SUCC_ORDER_USER_LIST_GET(HttpStatus.OK.value(),"유저 주문 목록 조회 성공"),
+    SUCC_ORDER_STORE_LIST_GET(HttpStatus.OK.value(),"유저 주문 목록 조회 성공"),
+    SUCC_ORDER_SINGLE_GET(HttpStatus.OK.value(),"주문 단건 조회 성공"),
+    SUCC_ORDER_UPDATE_STATUS(HttpStatus.OK.value(),"주문 상태 변경 성공"),
+    SUCC_ORDER_CANCLE(HttpStatus.OK.value(),"주문 취소 성공"),
+
     //상품 성공
     SUCC_PRODUCT_CREATE(HttpStatus.OK.value(),"상품 생성 성공"),
     SUCC_PRODUCT_LIST_GET(HttpStatus.OK.value(),"상품 목록 조회 성공"),
@@ -34,6 +49,7 @@ public enum ResponseCode {
     NOT_FOUND_REGiON(HttpStatus.NOT_FOUND.value(),"지역이 존재하지 않습니다. "),
     NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
+    NOT_FOUND_STORE_PRODUCT(HttpStatus.NOT_FOUND.value(), "가게에서 상품을 찾을 수 없습니다."),
 
     //잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.")
