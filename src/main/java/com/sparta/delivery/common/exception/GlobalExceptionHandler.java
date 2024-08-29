@@ -10,7 +10,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> notFoundExceptionHandler(NotFoundException ex) {
-        return ResponseEntity.badRequest().body(ErrorResponseDto.of(ex.getMessage()));
+        return ResponseEntity.badRequest().body(ErrorResponseDto.of(ex.getResponseCode()));
     }
 
 

@@ -1,5 +1,6 @@
 package com.sparta.delivery.user.service;
 
+import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
@@ -22,6 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CacheService cacheService;
 
 
     @Transactional
@@ -39,17 +41,22 @@ public class UserService {
     public UserInfoResponse getUserInfo(UUID userId) {
         return userRepository.findById(userId)
                 .map(UserInfoResponse::of)
-                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
     }
 
 
 
     @Transactional
     public void updateUser(UUID userId, UpdateUserRequest updateUserRequest) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
         String encodedPassword = passwordEncoder.encode(updateUserRequest.getPassword());
         updateUserRequest.encodingPassword(encodedPassword);
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
+        String oldRole = user.getRole().name();
+
+        if (!oldRole.equals(updateUserRequest.getRole().name())) {
+            cacheService.evictRole(user.getEmail());
+        }
 
         user.updateUser(updateUserRequest);
     }
@@ -58,7 +65,7 @@ public class UserService {
     @Transactional
     public void deleteUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("회원 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         user.delete(userId);
     }
