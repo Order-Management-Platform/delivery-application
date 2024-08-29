@@ -1,10 +1,7 @@
 package com.sparta.delivery.user.controller;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.dto.ErrorsResponseDto;
-import com.sparta.delivery.common.dto.FieldError;
-import com.sparta.delivery.common.dto.ResponseDto;
-import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.*;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
@@ -47,7 +44,7 @@ public class UserController {
         }
 
         userService.createUser(signUpRequest);
-        return ResponseEntity.ok(ResponseDto.of(200, "signUp successful"));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_USER_CREATE));
     }
 
 
@@ -56,15 +53,14 @@ public class UserController {
     public ResponseEntity<ResponsePageDto<UserInfoResponse>> getUsers(
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
         Page<UserInfoResponse> users = userService.getUsers(pageable);
-        return ResponseEntity.ok(ResponsePageDto.of(200, "조회 성공", users));
+        return ResponseEntity.ok(ResponsePageDto.of(ResponseCode.SUCC_USER_LIST_GET, users));
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{userId}")
-    public ResponseEntity<UserInfoResponse> getUserInfo(@PathVariable("userId") UUID userId,
-                                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseSingleDto<UserInfoResponse>> getUserInfo(@PathVariable("userId") UUID userId) {
         UserInfoResponse userResponse = userService.getUserInfo(userId);
-        return ResponseEntity.ok(userResponse);
+        return ResponseEntity.ok(ResponseSingleDto.of(ResponseCode.SUCC_USER_GET, userResponse));
     }
 
 
@@ -80,16 +76,15 @@ public class UserController {
                     .body(ErrorsResponseDto.of(ResponseCode.BAD_REQUEST, FieldError.of(bindingResult)));
         }
         userService.updateUser(userId, updateUserRequest);
-        return ResponseEntity.ok(ResponseDto.of(200, "user update successful"));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_USER_MODIFY));
     }
 
 
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable("userId") UUID userId,
-                                        @AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> deleteUser(@PathVariable("userId") UUID userId) {
         userService.deleteUser(userId);
-        return ResponseEntity.ok(ResponseDto.of(200, "user deleted successful."));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_USER_DELETE));
     }
 
 
