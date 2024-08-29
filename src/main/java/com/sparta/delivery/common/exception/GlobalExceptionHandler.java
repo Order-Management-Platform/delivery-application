@@ -13,5 +13,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(ErrorResponseDto.of(ex.getResponseCode()));
     }
 
+    @ExceptionHandler(CustomAccessDeniedException.class)
+    public ResponseEntity<ErrorResponseDto> accessDeniedExceptionHandler(CustomAccessDeniedException ex) {
+        return ResponseEntity.badRequest().body(ErrorResponseDto.of(ex.getResponseCode()));
+    }
+
 
 }
