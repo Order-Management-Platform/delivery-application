@@ -17,8 +17,8 @@ import java.util.UUID;
 @SQLRestriction("deleted_at is null")
 public class Region extends BaseEntity {
     @Id
-    @GeneratedValue
-    @Column(name = "region_id", nullable = false, columnDefinition = "BINARY(16)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "region_id", nullable = false)
     private UUID id;
 
     @Column(name = "region_name", unique = true)
@@ -34,7 +34,6 @@ public class Region extends BaseEntity {
         this.name = requestDto.getName();
     }
 
-    // 유저 아이디로 변경해야함 - kyeonkim
     public void delete(UUID regionId) {
         this.markDeleted(regionId);
     }

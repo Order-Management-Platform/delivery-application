@@ -3,6 +3,7 @@ package com.sparta.delivery.order.service;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
+import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
@@ -48,9 +49,9 @@ public class OrderService {
     @Transactional
     public CreateOrderResponseDto createOrder(OrderRequestDto request, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NullPointerException("해당 유저를 찾을 수 없습니다."));
+                new NotFoundException("해당 유저를 찾을 수 없습니다."));
         Store store = storeRepository.findById(request.getStoreId()).orElseThrow(() ->
-                new NullPointerException("해당 가게를 찾을 수 없습니다."));
+                new NotFoundException("해당 가게를 찾을 수 없습니다."));
         Order createOrder = orderRepository.save(Order.create(request, user, store));
 
         for (OrderProductDto product : request.getProduct()) {
@@ -61,7 +62,7 @@ public class OrderService {
 
     // 주문 생성 로직 시 상품 추가
     @Transactional
-    public void addProductToOder(
+    protected void addProductToOder(
             final Order order,
             final UUID storeId,
             final UUID productId,
@@ -70,18 +71,51 @@ public class OrderService {
         productRepository.findAllByStoreId(storeId).stream()
                 .filter(item -> Objects.equals(item.getId(), productId))
                 .findAny()
-                .ifPresent(product -> order.addProduct(create(order, productId, product.getPrice(), amount)));
+                .ifPresentOrElse(
+                        product -> order.addProduct(create(order, productId, product.getPrice(), amount)),
+                        () -> {
+                            throw new NotFoundException("가게에서 상품을 찾을 수 없습니다. 상품 ID: " + productId);
+                        }
+                );
     }
 
     // 주문 전체 조회 로직
     public ResponsePageDto<OrderResponseDto> getOrder(int page, int size, String sort, boolean asc) {
-        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sortBy = Sort.by(direction, sort);
-        Pageable pageable = PageRequest.of(page, size, sortBy);
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
 
         Page<Order> orderList = orderRepository.findAll(pageable);
+
+        return ResponsePageDto.of(200, "전체 주문 조회 성공", createOrderResponseDtoList(orderList));
+    }
+
+    // 주문 유저 조회 로직
+    public ResponsePageDto<OrderResponseDto> getUserOrder(int page, int size, String sort, boolean asc, UUID userId) {
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
+
+        Page<Order> orderList = orderRepository.findAllByUserId(userId, pageable);
+
+        return ResponsePageDto.of(200, "주문 유저 조회 성공", createOrderResponseDtoList(orderList));
+    }
+
+    // 주문 가게 조회 로직
+    public ResponsePageDto<OrderResponseDto> getStoreOrder(int page, int size, String sort, boolean asc, UUID storeId) {
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
+
+        Page<Order> orderList = orderRepository.findAllByStoreId(storeId, pageable);
+
+        return ResponsePageDto.of(200, "주문 가게 조회 성공", createOrderResponseDtoList(orderList));
+    }
+
+    // 주문 조회 시 Pageable를 만드는 로직
+    protected Pageable createCustomPageable(int page, int size, String sort, boolean asc) {
+        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(direction, sort);
+        return PageRequest.of(page, size, sortBy);
+    }
+
+    // 주문 조회 시 Page<OrderResponseDto>를 만드는 로직
+    protected Page<OrderResponseDto> createOrderResponseDtoList(Page<Order> orderList) {
         Page<OrderResponseDto> orderResponseDtoPage = orderList.map(order -> {
-            // 상품의 가격을 가져와 OrderProductDto로 만들어주는 loop - kyeonkim
             List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
                     OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
             ).toList();
@@ -89,13 +123,14 @@ public class OrderService {
 
             return OrderResponseDto.of(order, products, totalPrice);
         });
-        return ResponsePageDto.of(200, "주문 조회 성공", orderResponseDtoPage);
+        return orderResponseDtoPage;
     }
+
 
     // 주문 단건 조회 로직
     public ResponseSingleDto<OrderResponseDto> getFindByOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                new NotFoundException("해당 주문을 찾을 수 없습니다."));
         List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
                 OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
         ).toList();
@@ -108,18 +143,20 @@ public class OrderService {
     @Transactional
     public ResponseDto updateOrderStatus(UpdateOrderRequestDto request) {
         Order order = orderRepository.findById(request.getOrderId()).orElseThrow(() ->
-                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
+                new NotFoundException("해당 주문을 찾을 수 없습니다."));
         order.updateStatus(request.getOrderStatus());
         return ResponseDto.of(200, "주문 상태 수정 성공");
     }
 
     // 주문 취소 로직
     @Transactional
-    public ResponseDto cancelOrder(UUID orderId) {
+    public ResponseDto cancelOrder(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new IllegalArgumentException("해당 주문을 찾을 수 없습니다."));
-        order.cancel(orderId); // 유저 아이디로 변경해야함 - kyeonkim
-        order.updateStatus("주문 취소"); // 상태값을 여기서 바꾸는게 맞는지 의문 - kyeonkim
+                new NotFoundException("해당 주문을 찾을 수 없습니다."));
+        order.cancel(userId);
+        order.updateStatus("주문 취소");
         return ResponseDto.of(200, "주문 취소 성공");
     }
+
+
 }

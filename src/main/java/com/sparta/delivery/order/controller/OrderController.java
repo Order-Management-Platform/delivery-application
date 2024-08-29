@@ -12,7 +12,6 @@ import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -28,13 +27,13 @@ public class OrderController {
     }
 
     // 주문 생성
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("@securityUtilKyeonkim.checkOrderPermission(#orderRequest.orderType, authentication)")
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(
             @RequestBody OrderRequestDto orderRequest,
-            @AuthenticationPrincipal UserDetails userDetails
-            ) {
-        return ResponseEntity.ok(orderService.createOrder(orderRequest, ((UserDetailsImpl) userDetails).getUserId()));
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.ok(orderService.createOrder(orderRequest, userDetails.getUserId()));
     }
 
     // 주문 전체 조회
@@ -49,27 +48,53 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrder(page, size, sort, asc));
     }
 
-    // 주문 단건 조회
-    // 추가적으로 조회 요청을 보낸 사람이 해당 주문을 한게 맞는지 확인하는 작업이 필요 - kyeonkim
+    // 주문 유저 전체 조회
     @PreAuthorize("hasRole('CUSTOMER')")
+    @GetMapping("/user")
+    public ResponseEntity<ResponsePageDto<OrderResponseDto>> getUserOrder(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sort") String sort,
+            @RequestParam("asc") boolean asc,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.ok(orderService.getUserOrder(page, size, sort, asc, userDetails.getUserId()));
+    }
+
+    // 주문 가게 전체 조회
+    @PreAuthorize("hasRole('OWNER') and @securityUtilKyeonkim.checkStoreOwnership(#storeId, authentication)")
+    @GetMapping("/store")
+    public ResponseEntity<ResponsePageDto<OrderResponseDto>> getStoreOrder(
+            @RequestParam("page") int page,
+            @RequestParam("size") int size,
+            @RequestParam("sort") String sort,
+            @RequestParam("asc") boolean asc,
+            @RequestParam("storeId") UUID storeId
+    ) {
+        return ResponseEntity.ok(orderService.getStoreOrder(page, size, sort, asc, storeId));
+    }
+
+    // 주문 단건 조회
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtilKyeonkim.checkOrderOwnership(#orderId, authentication)")
     @GetMapping("/{orderId}")
     public ResponseEntity<ResponseSingleDto<OrderResponseDto>> getFindByOrder(@PathVariable(name = "orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getFindByOrder(orderId));
     }
 
     // 주문 상태 수정
-    // orderId > storeId > userId 를 가져와서 토큰에 있는 userId와 동일한 지 비교하는 로직 필요 - kyeonkim
-    @PreAuthorize("hasRole('OWNER')")
+    @PreAuthorize("hasRole('OWNER') and @securityUtilKyeonkim.checkUpdateOrderOwnership(#request.orderId, authentication)")
     @PutMapping
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody UpdateOrderRequestDto request) {
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
     }
 
     // 주문 취소
-    // 주문을 취소한 유저가 요청을 보낸 유저가 맞는 확인하는 로직 필요 - kyeonkim
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtilKyeonkim.checkOrderOwnership(#orderId, authentication)")
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<ResponseDto> cancelOrder(@PathVariable(name = "orderId") UUID orderId) {
-        return ResponseEntity.ok(orderService.cancelOrder(orderId));
+    public ResponseEntity<ResponseDto> cancelOrder(
+            @PathVariable(name = "orderId") UUID orderId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.ok(orderService.cancelOrder(orderId, userDetails.getUserId()));
     }
 }

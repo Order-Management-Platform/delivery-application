@@ -26,7 +26,7 @@ import java.util.UUID;
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id", columnDefinition = "BINARY(16)")
+    @Column(name = "order_id")
     private UUID id;
 
     @ManyToOne

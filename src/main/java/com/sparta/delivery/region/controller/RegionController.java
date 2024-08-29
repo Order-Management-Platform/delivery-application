@@ -1,12 +1,14 @@
 package com.sparta.delivery.region.controller;
 
 import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.region.dto.RegionRequestDto;
 import com.sparta.delivery.region.dto.RegionResponseDto;
-import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.region.service.RegionService;
+import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -52,8 +54,11 @@ public class RegionController {
     // 지역 삭제
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{regionId}")
-    public ResponseEntity<ResponseDto> deleteRegion(@PathVariable(name = "regionId") UUID regionId) {
-        ResponseDto response = regionService.deleteRegion(regionId);
+    public ResponseEntity<ResponseDto> deleteRegion(
+            @PathVariable(name = "regionId") UUID regionId,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+            ) {
+        ResponseDto response = regionService.deleteRegion(regionId, userDetails.getUserId());
         return ResponseEntity.ok(response);
     }
 }
