@@ -1,5 +1,6 @@
 package com.sparta.delivery.help.entity;
 
+import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.help.dto.HelpRequestDto;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
@@ -15,7 +16,7 @@ import java.util.UUID;
 @Table(name = "p_help")
 @SQLRestriction("deleted_at is null")
 @Builder(access = AccessLevel.PRIVATE)
-public class Help {
+public class Help extends BaseEntity {
     @Id
     @Column(name = "help_id")
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -42,7 +43,9 @@ public class Help {
                 .build();
     }
 
-    public void updateAnswer(String answer) {
+    public void update(String title, String question, String answer) {
+        this.title = title;
+        this.question = question;
         this.answer = answer;
     }
 }

@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class HelpRequestDto {
     private String title;
     private String question;
+    private String answer;
 }

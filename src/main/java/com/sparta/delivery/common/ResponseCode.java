@@ -76,6 +76,7 @@ public enum ResponseCode {
     NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
     NOT_FOUND_STORE_PRODUCT(HttpStatus.NOT_FOUND.value(), "가게에서 상품을 찾을 수 없습니다."),
+    NOT_FOUND_HELP(HttpStatus.NOT_FOUND.value(), "문의내역을 찾을 수 없습니다."),
 
     //잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다."),

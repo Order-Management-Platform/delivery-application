@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/help")
@@ -27,5 +26,14 @@ public class HelpController {
             @RequestBody HelpRequestDto request
     ) {
         return ResponseEntity.ok(helpService.createHelp(userDetails.getUserId(), request));
+    }
+
+    @PutMapping("/{helpId}")
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.checkHelpUser(#helpId, authentication)")
+    public ResponseEntity<ResponseDto> updateHelp(
+            @PathVariable(name = "helpId") UUID helpId,
+            @RequestBody HelpRequestDto request
+    ) {
+        return ResponseEntity.ok(helpService.updateHelp(helpId, request));
     }
 }
