@@ -1,5 +1,6 @@
 package com.sparta.delivery.common.dto;
 
+import com.sparta.delivery.common.ResponseCode;
 import lombok.*;
 
 @Getter
@@ -14,6 +15,13 @@ public class ResponseDto {
         return ResponseDto.builder()
                 .status(status)
                 .message(message)
+                .build();
+    }
+
+    public static ResponseDto of(ResponseCode resCode) {
+        return ResponseDto.builder()
+                .status(resCode.getStatus())
+                .message(resCode.getMessage())
                 .build();
     }
 }

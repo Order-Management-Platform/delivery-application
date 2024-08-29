@@ -1,5 +1,6 @@
 package com.sparta.delivery.common.dto;
 
+import com.sparta.delivery.common.ResponseCode;
 import lombok.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +21,18 @@ public class ResponsePageDto<T> {
         return ResponsePageDto.<T>builder()  // 제네릭 타입 명시
                 .status(status)
                 .message(message)
+                .content(page.getContent())
+                .pageable(CustomPageable.fromPage(
+                        page.getPageable(),
+                        page.getTotalPages(),
+                        page.getTotalElements()
+                ))
+                .build();
+    }
+    public static <T> ResponsePageDto<T> of(ResponseCode resCode,final Page<T> page) {
+        return ResponsePageDto.<T>builder()  // 제네릭 타입 명시
+                .status(resCode.getStatus())
+                .message(resCode.getMessage())
                 .content(page.getContent())
                 .pageable(CustomPageable.fromPage(
                         page.getPageable(),

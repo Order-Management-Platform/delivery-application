@@ -37,6 +37,7 @@ public class Store extends BaseEntity {
     private Category category;
 
     @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="region_id")
     private Region region;
 
     @OneToMany(mappedBy="store",

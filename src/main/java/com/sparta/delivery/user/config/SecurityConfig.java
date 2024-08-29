@@ -6,6 +6,8 @@ import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
 import com.sparta.delivery.user.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
@@ -16,6 +18,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -46,6 +49,7 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers("/user/signUp").permitAll()
                                 .requestMatchers("/user/signIn").permitAll()
+                                .requestMatchers("/**").permitAll()
                 // 여기서 권한 별 접속 가능 여부 설정
                                 .anyRequest().authenticated() //
 
@@ -57,6 +61,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    @ConditionalOnProperty(name = "spring.h2.console.enabled",havingValue = "true")
+    public WebSecurityCustomizer configureH2ConsoleEnable() {
+        return web -> web.ignoring()
+                .requestMatchers(PathRequest.toH2Console());
+    }
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

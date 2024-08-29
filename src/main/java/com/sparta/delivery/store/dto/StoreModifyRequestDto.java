@@ -26,16 +26,7 @@ public class StoreModifyRequestDto {
     private String address;
     @Pattern(regexp = "[0-9]{2}:[0-9]{2}~[0-9]{2}:[0-9]{2}",message = "운영시간 양식을 맞춰주세요")
     private String operatingTime;
-    private UUID category;
+    private UUID categoryId;
+    private UUID regionId;
 
-    public Store toEntity(StoreModifyRequestDto dto) {
-        return Store.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .tel(dto.getTel())
-                .minPrice(dto.getMinPrice())
-                .address(dto.getAddress())
-                .operatingTime(dto.getOperatingTime())
-                .build();
-    }
 }
