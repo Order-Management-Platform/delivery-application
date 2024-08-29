@@ -25,8 +25,8 @@ import java.util.UUID;
 @SQLRestriction("deleted_at is null")
 public class Order extends BaseEntity {
     @Id
-    @GeneratedValue
-    @Column(name = "order_id", columnDefinition = "BINARY(16)")
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "order_id")
     private UUID id;
 
     @ManyToOne
