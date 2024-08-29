@@ -7,6 +7,7 @@ import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 public class AiController {
 
     private final AiService aiService;
+
+    @PreAuthorize("hasRole('OWNER')")
     @PostMapping
     public ResponseSingleDto getAiDescription(@RequestParam String name) throws JsonProcessingException {
         String data = aiService.getAiDescription(name);
