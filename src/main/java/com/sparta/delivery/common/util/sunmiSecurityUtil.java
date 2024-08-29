@@ -42,7 +42,7 @@ public class sunmiSecurityUtil {
         for (Store store : storeList) {
             if(store.getId().equals(StoreId)) result = true;
         }
-        log.info("완료"+result);
+        log.info("완료: "+result);
         return result;
     }
 
@@ -63,10 +63,10 @@ public class sunmiSecurityUtil {
 
         boolean result=false;
         for (Store store : storeList) {
-            if(store.getId().equals(product.getStore())) result = true;
+            if(store.getId().equals(product.getStore().getId())) result = true;
         }
 
-        log.info("완료");
+        log.info("완료: "+result);
         return result;
     }
 
