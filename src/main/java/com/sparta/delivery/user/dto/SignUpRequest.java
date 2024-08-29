@@ -12,10 +12,10 @@ import lombok.*;
 @Builder
 public class SignUpRequest {
 
-    @NotBlank
+    @NotBlank(message = "이름칸이 비어있습니다.")
     private String username;
 
-    @NotBlank
+    @NotBlank(message = "별명을 설정해 주세요.")
     private String nickname;
 
     @NotBlank
