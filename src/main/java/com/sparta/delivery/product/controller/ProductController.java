@@ -30,8 +30,8 @@ public class ProductController {
     /**
      * 음식점 상품 추가
      */
-    //@PreAuthorize("hasRole('MANAGER')")
-    @PostMapping
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#productId)")
+    @PostMapping("/{userId}")
     public ResponseDto createProduct(@RequestBody ProductCreateRequestDto dto) {
         productService.createProduct(dto);
         return ResponseDto.of(ResponseCode.SUCC_PRODUCT_CREATE);
@@ -41,6 +41,7 @@ public class ProductController {
      * 음식점 목록 조회
      */
     //쿼리스트링 dto로 매핑 , pageable service단에서
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/store/{storeId}")
     public ResponsePageDto getStoreProductList(@PathVariable UUID storeId,
                                                             @RequestParam(required = false,defaultValue="") String keyWord,
@@ -58,6 +59,7 @@ public class ProductController {
     /**
      * 상품 상세조회
      */
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/{productId}")
     public ResponseSingleDto getProduct(@PathVariable UUID productId) {
         ProductResponseDto data=productService.getProduct(productId);
@@ -68,7 +70,7 @@ public class ProductController {
      *  상품 수정
      *  해당 상품 음식점의 사장일 경우
      */
-    //@PreAuthorize("hasRole('OWNER') and (@sunmiSecurityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#productId)")
     @PutMapping("/{productId}")
     public ResponseDto ModifyProduct(@PathVariable UUID productId,
                                             @RequestBody ProductModifyRequestDto dto) {
@@ -79,7 +81,7 @@ public class ProductController {
     /**
      * 상품 상태 변경
      */
-    //@PreAuthorize("hasRole('OWNER') and (@sunmiSecurityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#productId)")
     @PatchMapping("/{productId}")
     public ResponseDto switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
@@ -89,7 +91,7 @@ public class ProductController {
     /**
      * 상품 삭제
      */
-    //@PreAuthorize("hasRole('OWNER') and (@sunmiSecurityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#productId)")
     @DeleteMapping("/{productId}")
     public ResponseDto deleteProduct(@PathVariable UUID productId) {
         productService.deleteProduct(productId);
