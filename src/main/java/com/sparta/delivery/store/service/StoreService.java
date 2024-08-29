@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -31,6 +32,18 @@ public class StoreService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final RegionRepository regionRepository;
+
+
+    public void createStore(UUID userId, Map<String,String> map) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        Store store = Store.builder()
+                .name(map.get("name"))
+                .user(user)
+                .build();
+        storeRepository.save(store);
+    }
 
     //todo : query dsl로 변경
     public Page<StoreListResponseDto> getStoreList(UUID categoryId, UUID regionId, String keyWord, Pageable pageable) {
