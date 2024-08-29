@@ -30,10 +30,10 @@ public class ProductController {
     /**
      * 음식점 상품 추가
      */
-    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isProductOwner(authentication,#productId)")
-    @PostMapping("/{userId}")
-    public ResponseDto createProduct(@RequestBody ProductCreateRequestDto dto) {
-        productService.createProduct(dto);
+    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isStoreOwner(authentication,#storeId)")
+    @PostMapping("/{storeId}")
+    public ResponseDto createProduct(@PathVariable UUID storeId,@RequestBody ProductCreateRequestDto dto) {
+        productService.createProduct(dto,storeId);
         return ResponseDto.of(ResponseCode.SUCC_PRODUCT_CREATE);
     }
 
