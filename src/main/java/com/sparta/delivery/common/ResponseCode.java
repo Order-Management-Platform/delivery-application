@@ -62,6 +62,14 @@ public enum ResponseCode {
     //ai 성공
     SUCC_AI_GET(HttpStatus.OK.value(), "ai 음식 설명 요청 성공"),
 
+    //notice 성공
+    SUCC_NOTICE_CREATE(HttpStatus.OK.value(), "공지사항 생성 성공"),
+    SUCC_NOTICE_GET(HttpStatus.OK.value(), "공지사항 상세 조회 성공"),
+    SUCC_NOTICE_LIST_GET(HttpStatus.OK.value(), "공지사항 목록 조회 성공"),
+    SUCC_NOTICE_MODIFY(HttpStatus.OK.value(), "공지사항 수정 성공"),
+    SUCC_NOTICE_DELETE(HttpStatus.OK.value(), "공지사항 삭제 성공"),
+
+
     //entity 조회 실패
     NOT_FOUND_USER(HttpStatus.NOT_FOUND.value(), "회원이 존재하지 않습니다."),
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND.value(), "카테고리가 존재하지 않습니다."),
@@ -71,6 +79,7 @@ public enum ResponseCode {
     NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
     NOT_FOUND_STORE_PRODUCT(HttpStatus.NOT_FOUND.value(), "가게에서 상품을 찾을 수 없습니다."),
+    NOT_FOUND_NOTICE(HttpStatus.NOT_FOUND.value(), "공지사항이 존재하지 않습니다."),
 
     //잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다."),
@@ -78,8 +87,8 @@ public enum ResponseCode {
 
     // 잘못된 접근
     USER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 결제내역만 조회할 수 있습니다."),
-    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다."),
-    ;
+    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다.");
+
 
     private final int status;
     private final String message;
