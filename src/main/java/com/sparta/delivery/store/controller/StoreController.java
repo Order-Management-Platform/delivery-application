@@ -8,16 +8,13 @@ import com.sparta.delivery.store.dto.StoreGetResponseDto;
 import com.sparta.delivery.store.dto.StoreListResponseDto;
 import com.sparta.delivery.store.dto.StoreModifyRequestDto;
 import com.sparta.delivery.store.entity.Store;
-import com.sparta.delivery.store.repository.StoreRepository;
 import com.sparta.delivery.store.service.StoreService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -86,7 +83,7 @@ public class StoreController {
     /**
      * 음식점 수정
      */
-    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isStoreOwner(authentication,#storeId)")
+    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
     @PutMapping("/{storeId}")
     public ResponseDto ModifyStore(@PathVariable UUID storeId, @RequestBody StoreModifyRequestDto dto) {
         storeService.modifyStore(storeId, dto);
@@ -96,7 +93,7 @@ public class StoreController {
     /**
      * 음식점 삭제
      */
-    @PreAuthorize("hasRole('OWNER') and @sunmiSecurityUtil.isStoreOwner(authentication,#storeId)")
+    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
     @DeleteMapping("/{storeId}")
     public ResponseDto deleteStore(@PathVariable UUID storeId) {
         storeService.deleteStore(storeId);

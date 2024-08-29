@@ -27,7 +27,7 @@ public class OrderController {
     }
 
     // 주문 생성
-    @PreAuthorize("@securityUtilKyeonkim.checkOrderPermission(#orderRequest.orderType, authentication)")
+    @PreAuthorize("@securityUtil.checkOrderPermission(#orderRequest.orderType, authentication)")
     @PostMapping
     public ResponseEntity<CreateOrderResponseDto> createOrder(
             @RequestBody OrderRequestDto orderRequest,
@@ -62,7 +62,7 @@ public class OrderController {
     }
 
     // 주문 가게 전체 조회
-    @PreAuthorize("hasRole('OWNER') and @securityUtilKyeonkim.checkStoreOwnership(#storeId, authentication)")
+    @PreAuthorize("hasRole('OWNER') and @securityUtil.checkStoreOwnership(#storeId, authentication)")
     @GetMapping("/store")
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getStoreOrder(
             @RequestParam("page") int page,
@@ -75,21 +75,21 @@ public class OrderController {
     }
 
     // 주문 단건 조회
-    @PreAuthorize("hasRole('CUSTOMER') and @securityUtilKyeonkim.checkOrderOwnership(#orderId, authentication)")
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.checkOrderOwnership(#orderId, authentication)")
     @GetMapping("/{orderId}")
     public ResponseEntity<ResponseSingleDto<OrderResponseDto>> getFindByOrder(@PathVariable(name = "orderId") UUID orderId) {
         return ResponseEntity.ok(orderService.getFindByOrder(orderId));
     }
 
     // 주문 상태 수정
-    @PreAuthorize("hasRole('OWNER') and @securityUtilKyeonkim.checkUpdateOrderOwnership(#request.orderId, authentication)")
+    @PreAuthorize("hasRole('OWNER') and @securityUtil.checkUpdateOrderOwnership(#request.orderId, authentication)")
     @PutMapping
     public ResponseEntity<ResponseDto> updateOrderStatus(@RequestBody UpdateOrderRequestDto request) {
         return ResponseEntity.ok(orderService.updateOrderStatus(request));
     }
 
     // 주문 취소
-    @PreAuthorize("hasRole('CUSTOMER') and @securityUtilKyeonkim.checkOrderOwnership(#orderId, authentication)")
+    @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.checkOrderOwnership(#orderId, authentication)")
     @DeleteMapping("/{orderId}")
     public ResponseEntity<ResponseDto> cancelOrder(
             @PathVariable(name = "orderId") UUID orderId,
