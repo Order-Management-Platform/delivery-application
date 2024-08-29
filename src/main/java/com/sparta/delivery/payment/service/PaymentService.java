@@ -43,13 +43,13 @@ public class PaymentService {
         Order order = orderRepository.findById(payment.getOrderId())
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
 
-        if (user.getRole().equals(UserRole.CUSTOMER)) {
+        if (user.getRole() == UserRole.CUSTOMER) {
             if (!payment.getUser().equals(user)) {
                 throw new CustomAccessDeniedException(ResponseCode.USER_DENIED_ACCESS_PAYMENT);
             }
         }
 
-        if (user.getRole().equals(UserRole.OWNER)) {
+        if (user.getRole() == UserRole.OWNER) {
             if (!isMatchStore(user, order)) {
                 throw new CustomAccessDeniedException(ResponseCode.STORE_OWNER_DENIED_ACCESS_PAYMENT);
             }
