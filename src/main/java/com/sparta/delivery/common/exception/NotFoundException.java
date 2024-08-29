@@ -1,20 +1,21 @@
 package com.sparta.delivery.common.exception;
 
-import com.sparta.delivery.common.enums.ErrorCode;
+import com.sparta.delivery.common.ResponseCode;
 import lombok.Getter;
 
 @Getter
 public class NotFoundException extends IllegalArgumentException{
 
-    private ErrorCode errorCode;
+    private ResponseCode responseCode;
 
+    //삭제예정
     public NotFoundException(String message) {
         super(message);
     }
 
-    public NotFoundException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+    public NotFoundException(ResponseCode responseCode) {
+        super(responseCode.getMessage());
+        this.responseCode = responseCode;
     }
 }
 

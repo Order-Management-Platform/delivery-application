@@ -1,7 +1,7 @@
 package com.sparta.delivery.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.sparta.delivery.common.enums.ErrorCode;
+import com.sparta.delivery.common.ResponseCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +21,7 @@ public class ErrorsResponseDto<T> {
     private final List<T> errorMessages;
 
 
-    public static <T> ErrorsResponseDto<T> of(final ErrorCode errorCode, List<T> errorMessages) {
+    public static <T> ErrorsResponseDto<T> of(final ResponseCode errorCode, List<T> errorMessages) {
         return ErrorsResponseDto.<T>builder()
                 .status(errorCode.getStatus())
                 .errorMessage(errorMessages.size() == 1 ? errorMessages.get(0).toString() : null)
