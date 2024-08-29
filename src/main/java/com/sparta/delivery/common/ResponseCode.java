@@ -62,6 +62,11 @@ public enum ResponseCode {
     //ai 성공
     SUCC_AI_GET(HttpStatus.OK.value(), "ai 음식 설명 요청 성공"),
 
+    // 고객센터 성공
+    SUCC_HELP_CREATE(HttpStatus.OK.value(), "문의 요청 성공"),
+    SUCC_HELP_UPDATE(HttpStatus.OK.value(), "문의 수정 성공"),
+    SUCC_HELP_DELETE(HttpStatus.OK.value(), "문의 삭제 성공"),
+
     //entity 조회 실패
     NOT_FOUND_USER(HttpStatus.NOT_FOUND.value(), "회원이 존재하지 않습니다."),
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND.value(), "카테고리가 존재하지 않습니다."),
