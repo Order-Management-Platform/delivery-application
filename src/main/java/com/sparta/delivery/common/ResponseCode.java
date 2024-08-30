@@ -17,7 +17,7 @@ public enum ResponseCode {
     SUCC_ORDER_CREATE(HttpStatus.OK.value(),"주문 생성 성공"),
     SUCC_ORDER_LIST_GET(HttpStatus.OK.value(),"전제 주문 목록 조회 성공"),
     SUCC_ORDER_USER_LIST_GET(HttpStatus.OK.value(),"유저 주문 목록 조회 성공"),
-    SUCC_ORDER_STORE_LIST_GET(HttpStatus.OK.value(),"유저 주문 목록 조회 성공"),
+    SUCC_ORDER_STORE_LIST_GET(HttpStatus.OK.value(),"가게 주문 목록 조회 성공"),
     SUCC_ORDER_SINGLE_GET(HttpStatus.OK.value(),"주문 단건 조회 성공"),
     SUCC_ORDER_UPDATE_STATUS(HttpStatus.OK.value(),"주문 상태 변경 성공"),
     SUCC_ORDER_CANCLE(HttpStatus.OK.value(),"주문 취소 성공"),
@@ -62,6 +62,13 @@ public enum ResponseCode {
     //ai 성공
     SUCC_AI_GET(HttpStatus.OK.value(), "ai 음식 설명 요청 성공"),
 
+    // 고객센터 성공
+    SUCC_HELP_CREATE(HttpStatus.OK.value(), "문의 요청 성공"),
+    SUCC_HELP_GET(HttpStatus.OK.value(), "문의 전체 조회 성공"),
+    SUCC_HELP_USER_GET(HttpStatus.OK.value(), "유저 문의 전체 조회 성공"),
+    SUCC_HELP_UPDATE(HttpStatus.OK.value(), "문의 수정 성공"),
+    SUCC_HELP_DELETE(HttpStatus.OK.value(), "문의 삭제 성공"),
+
     //entity 조회 실패
     NOT_FOUND_USER(HttpStatus.NOT_FOUND.value(), "회원이 존재하지 않습니다."),
     NOT_FOUND_CATEGORY(HttpStatus.NOT_FOUND.value(), "카테고리가 존재하지 않습니다."),
@@ -71,6 +78,10 @@ public enum ResponseCode {
     NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
     NOT_FOUND_STORE_PRODUCT(HttpStatus.NOT_FOUND.value(), "가게에서 상품을 찾을 수 없습니다."),
+    NOT_FOUND_HELP(HttpStatus.NOT_FOUND.value(), "문의내역을 찾을 수 없습니다."),
+
+    // 주문한 지 5분이 지나면 취소 불가능
+    ORDER_CANCEL_TIME_EXCEEDED(HttpStatus.REQUEST_TIMEOUT.value(), "주문 취소는 주문 후 5분 이내에만 가능합니다. 현재 주문은 취소할 수 없습니다."),
 
     //잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다."),
@@ -78,7 +89,7 @@ public enum ResponseCode {
 
     // 잘못된 접근
     USER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 결제내역만 조회할 수 있습니다."),
-    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다."),
+    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다.")
     ;
 
     private final int status;
