@@ -1,8 +1,7 @@
 package com.sparta.delivery.payment.service;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.CustomAccessDeniedException;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.payment.dto.CancelPaymentRequest;
@@ -37,34 +36,34 @@ public class PaymentService {
 
     public PaymentInfoResponse getPayment(UUID userId, UUID paymentId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PAYMENT));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_PAYMENT));
         Order order = orderRepository.findById(payment.getOrderId())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_ORDER));
 
-        if (user.getRole().equals(UserRole.CUSTOMER)) {
+        if (user.getRole() == UserRole.CUSTOMER) {
             if (!payment.getUser().equals(user)) {
-                throw new CustomAccessDeniedException(ResponseCode.USER_DENIED_ACCESS_PAYMENT);
+                throw new BusinessException(ResponseCode.USER_DENIED_ACCESS_PAYMENT);
             }
         }
 
-        if (user.getRole().equals(UserRole.OWNER)) {
+        if (user.getRole() == UserRole.OWNER) {
             if (!isMatchStore(user, order)) {
-                throw new CustomAccessDeniedException(ResponseCode.STORE_OWNER_DENIED_ACCESS_PAYMENT);
+                throw new BusinessException(ResponseCode.STORE_OWNER_DENIED_ACCESS_PAYMENT);
             }
         }
 
         return paymentRepository.findById(paymentId)
                 .map(PaymentInfoResponse::of)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PAYMENT));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_PAYMENT));
     }
 
 
     @Transactional
     public void updatePayment(UUID paymentId, CancelPaymentRequest cancelPaymentRequest) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PAYMENT));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_PAYMENT));
         payment.changePaymentByCancel(cancelPaymentRequest.getPaymentStatus());
     }
 
@@ -72,7 +71,7 @@ public class PaymentService {
     @Transactional
     public void deletePayment(UUID paymentId, UUID userId) {
         Payment payment = paymentRepository.findById(paymentId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PAYMENT));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_PAYMENT));
         payment.delete(userId);
     }
 

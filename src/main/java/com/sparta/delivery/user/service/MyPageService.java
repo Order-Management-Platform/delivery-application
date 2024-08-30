@@ -1,7 +1,7 @@
 package com.sparta.delivery.user.service;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.entity.User;
@@ -24,7 +24,7 @@ public class MyPageService {
     public UserInfoResponse myPageInfo(String email) {
         return userRepository.findByEmail(email)
                 .map(UserInfoResponse::of)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
     }
 
 
@@ -33,7 +33,7 @@ public class MyPageService {
         String encodedPassword = passwordEncoder.encode(updateMyPageRequest.getPassword());
         updateMyPageRequest.encodingPassword(encodedPassword);
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_CATEGORY));
 
         user.updateMyPage(updateMyPageRequest);
     }
@@ -41,7 +41,7 @@ public class MyPageService {
     @Transactional
     public void deleteMyPage(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         user.delete(userId);
     }
