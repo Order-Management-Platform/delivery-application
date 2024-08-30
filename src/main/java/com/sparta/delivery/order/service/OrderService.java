@@ -62,25 +62,6 @@ public class OrderService {
         return CreateOrderResponseDto.of(ResponseCode.SUCC_ORDER_CREATE, createOrder.getId());
     }
 
-    // 주문 생성 로직 시 상품 추가
-    @Transactional
-    protected void addProductToOder(
-            final Order order,
-            final UUID storeId,
-            final UUID productId,
-            final int amount
-    ) {
-        productRepository.findAllByStoreId(storeId).stream()
-                .filter(item -> Objects.equals(item.getId(), productId))
-                .findAny()
-                .ifPresentOrElse(
-                        product -> order.addProduct(create(order, productId, product.getPrice(), amount)),
-                        () -> {
-                            throw new NotFoundException(ResponseCode.NOT_FOUND_STORE_PRODUCT);
-                        }
-                );
-    }
-
     // 주문 전체 조회 로직
     public ResponsePageDto<OrderResponseDto> getOrder(int page, int size, String sort, boolean asc) {
         Pageable pageable = createCustomPageable(page, size, sort, asc);
@@ -106,26 +87,6 @@ public class OrderService {
         Page<Order> orderList = orderRepository.findAllByStoreId(storeId, pageable);
 
         return ResponsePageDto.of(ResponseCode.SUCC_ORDER_STORE_LIST_GET, createOrderResponseDtoList(orderList));
-    }
-
-    // 주문 조회 시 Pageable를 만드는 로직
-    protected Pageable createCustomPageable(int page, int size, String sort, boolean asc) {
-        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
-        Sort sortBy = Sort.by(direction, sort);
-        return PageRequest.of(page, size, sortBy);
-    }
-
-    // 주문 조회 시 Page<OrderResponseDto>를 만드는 로직
-    protected Page<OrderResponseDto> createOrderResponseDtoList(Page<Order> orderList) {
-        Page<OrderResponseDto> orderResponseDtoPage = orderList.map(order -> {
-            List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
-                    OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
-            ).toList();
-            int totalPrice = products.stream().mapToInt(product -> product.getPrice() * product.getAmount()).sum();
-
-            return OrderResponseDto.of(order, products, totalPrice);
-        });
-        return orderResponseDtoPage;
     }
 
     // 주문 단건 조회 로직
@@ -159,5 +120,42 @@ public class OrderService {
         return ResponseDto.of(ResponseCode.SUCC_ORDER_CANCLE);
     }
 
+    // 주문 생성 로직 시 상품 추가
+    @Transactional
+    protected void addProductToOder(
+            final Order order,
+            final UUID storeId,
+            final UUID productId,
+            final int amount
+    ) {
+        productRepository.findAllByStoreId(storeId).stream()
+                .filter(item -> Objects.equals(item.getId(), productId))
+                .findAny()
+                .ifPresentOrElse(
+                        product -> order.addProduct(create(order, productId, product.getPrice(), amount)),
+                        () -> {
+                            throw new NotFoundException(ResponseCode.NOT_FOUND_STORE_PRODUCT);
+                        }
+                );
+    }
 
+    // 주문 조회 시 Pageable를 만드는 로직
+    protected Pageable createCustomPageable(int page, int size, String sort, boolean asc) {
+        Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Sort sortBy = Sort.by(direction, sort);
+        return PageRequest.of(page, size, sortBy);
+    }
+
+    // 주문 조회 시 Page<OrderResponseDto>를 만드는 로직
+    protected Page<OrderResponseDto> createOrderResponseDtoList(Page<Order> orderList) {
+        Page<OrderResponseDto> orderResponseDtoPage = orderList.map(order -> {
+            List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
+                    OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
+            ).toList();
+            int totalPrice = products.stream().mapToInt(product -> product.getPrice() * product.getAmount()).sum();
+
+            return OrderResponseDto.of(order, products, totalPrice);
+        });
+        return orderResponseDtoPage;
+    }
 }
