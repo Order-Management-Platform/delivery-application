@@ -1,6 +1,7 @@
 package com.sparta.delivery.payment.entity;
 
 import com.sparta.delivery.common.BaseEntity;
+import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,6 +25,10 @@ public class Payment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+
+    private UUID orderId;
+
 
     private Long paymentAmount;
 
@@ -50,8 +55,9 @@ public class Payment extends BaseEntity {
         this.markDeleted(userId);
     }
 
-    public static Payment create(User user, Long paymentAmount) {
+    public static Payment create(User user,UUID orderId, Long paymentAmount) {
         return Payment.builder()
+                .orderId(orderId)
                 .user(user)
                 .paymentAmount(paymentAmount).build();
     }

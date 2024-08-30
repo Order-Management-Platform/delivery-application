@@ -1,12 +1,12 @@
 package com.sparta.delivery.category.controller;
 
-import com.sparta.delivery.common.dto.ResponsePageDto;
-import com.sparta.delivery.user.entity.UserRole;
-import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.category.dto.CategoryResponse;
 import com.sparta.delivery.category.dto.UpdateCategoryRequest;
 import com.sparta.delivery.category.service.CategoryService;
+import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,7 +31,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestParam("name") String categoryName) {
         categoryService.createCategory(categoryName);
-        return ResponseEntity.ok(ResponseDto.of(200, "카테고리 생성 성공"));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_CATEGORY_CREATE));
     }
 
     @PreAuthorize("hasRole('CUSTOMER')")
@@ -41,7 +41,7 @@ public class CategoryController {
             sort = "createdAt",
             direction = Sort.Direction.DESC) Pageable pageable) {
         Page<CategoryResponse> categories = categoryService.getCategories(pageable);
-        return ResponseEntity.ok(ResponsePageDto.of(200, "조회 성공",categories));
+        return ResponseEntity.ok(ResponsePageDto.of(ResponseCode.SUCC_CATEGORY_LIST_GET,categories));
     }
 
 
@@ -50,7 +50,7 @@ public class CategoryController {
     public ResponseEntity<ResponseDto> updateCategory(@PathVariable("categoryId")UUID categoryId,
                                                       @RequestBody UpdateCategoryRequest updateCategoryRequest) {
         categoryService.updateCategory(categoryId, updateCategoryRequest);
-        return ResponseEntity.ok(ResponseDto.of(200, "카테고리 수정 성공"));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_CATEGORY_MODIFY));
     }
 
 
@@ -60,6 +60,6 @@ public class CategoryController {
                                                       @AuthenticationPrincipal UserDetails userDetails)
     {
         categoryService.deleteCategory(categoryId, ((UserDetailsImpl) userDetails).getUserId());
-        return ResponseEntity.ok(ResponseDto.of(200, "카테고리 삭제 성공"));
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_CATEGORY_DELETE));
     }
 }
