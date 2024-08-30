@@ -35,12 +35,13 @@ public class RegionController {
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping
     public ResponseEntity<ResponsePageDto<RegionResponseDto>> getRegion(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            @RequestParam("sort") String sort,
-            @RequestParam("asc") boolean asc
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(value = "asc", required = false, defaultValue = "false") boolean asc,
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword
     ) {
-        return ResponseEntity.ok(regionService.getRegion(page, size, sort, asc));
+        return ResponseEntity.ok(regionService.getRegion(page - 1, size, sort, asc, keyword));
     }
 
     // 지역 수정

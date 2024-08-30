@@ -2,6 +2,8 @@ package com.sparta.delivery.common.util;
 
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.help.entity.Help;
+import com.sparta.delivery.help.repository.HelpRepository;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.product.entity.Product;
@@ -32,6 +34,7 @@ public class SecurityUtil {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
+    private final HelpRepository helpRepository;
 
     // 주문 생성 시 orderType check
     public boolean checkOrderPermission(String orderType, Authentication authentication) {
@@ -166,4 +169,20 @@ public class SecurityUtil {
 
     }
 
+    // 문의를 작성한 유저와 요청을 보낸 유저가 동일한지 확인
+    public boolean checkHelpUser(UUID helpId, Authentication authentication) {
+        String userRole = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(grantedAuthority -> grantedAuthority.getAuthority())
+                .orElse("NO_ROLE_FOUND");
+
+        if (userRole.equals("ROLE_MANAGER") || userRole.equals("ROLE_MASTER"))
+            return true;
+
+        Help help = helpRepository.findById(helpId).orElseThrow(() ->
+                new NotFoundException(ResponseCode.NOT_FOUND_HELP));
+        UUID authenticatedUserId = ((UserDetailsImpl) authentication.getPrincipal()).getUserId();
+
+        return authenticatedUserId.equals(help.getUser().getId());
+    }
 }
