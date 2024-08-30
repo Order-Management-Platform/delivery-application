@@ -58,7 +58,7 @@ public class HelpService {
         Page<Help> helpList = helpRepository.findAllByUserId(user.getId(), pageable);
         Page<HelpResponseDto> helpResponseDtoPage = helpList.map(HelpResponseDto::of);
 
-        return ResponsePageDto.of(ResponseCode.SUCC_USER_HELP_GET, helpResponseDtoPage);
+        return ResponsePageDto.of(ResponseCode.SUCC_HELP_USER_GET, helpResponseDtoPage);
     }
 
     // 문의 수정 로직

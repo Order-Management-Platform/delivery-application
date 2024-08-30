@@ -17,7 +17,7 @@ public enum ResponseCode {
     SUCC_ORDER_CREATE(HttpStatus.OK.value(),"주문 생성 성공"),
     SUCC_ORDER_LIST_GET(HttpStatus.OK.value(),"전제 주문 목록 조회 성공"),
     SUCC_ORDER_USER_LIST_GET(HttpStatus.OK.value(),"유저 주문 목록 조회 성공"),
-    SUCC_ORDER_STORE_LIST_GET(HttpStatus.OK.value(),"유저 주문 목록 조회 성공"),
+    SUCC_ORDER_STORE_LIST_GET(HttpStatus.OK.value(),"가게 주문 목록 조회 성공"),
     SUCC_ORDER_SINGLE_GET(HttpStatus.OK.value(),"주문 단건 조회 성공"),
     SUCC_ORDER_UPDATE_STATUS(HttpStatus.OK.value(),"주문 상태 변경 성공"),
     SUCC_ORDER_CANCLE(HttpStatus.OK.value(),"주문 취소 성공"),
@@ -65,7 +65,7 @@ public enum ResponseCode {
     // 고객센터 성공
     SUCC_HELP_CREATE(HttpStatus.OK.value(), "문의 요청 성공"),
     SUCC_HELP_GET(HttpStatus.OK.value(), "문의 전체 조회 성공"),
-    SUCC_USER_HELP_GET(HttpStatus.OK.value(), "유저 문의 전체 조회 성공"),
+    SUCC_HELP_USER_GET(HttpStatus.OK.value(), "유저 문의 전체 조회 성공"),
     SUCC_HELP_UPDATE(HttpStatus.OK.value(), "문의 수정 성공"),
     SUCC_HELP_DELETE(HttpStatus.OK.value(), "문의 삭제 성공"),
 
