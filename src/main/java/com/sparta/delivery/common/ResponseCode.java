@@ -64,6 +64,7 @@ public enum ResponseCode {
 
     // 고객센터 성공
     SUCC_HELP_CREATE(HttpStatus.OK.value(), "문의 요청 성공"),
+    SUCC_HELP_GET(HttpStatus.OK.value(), "문의 전체 조회 성공"),
     SUCC_HELP_UPDATE(HttpStatus.OK.value(), "문의 수정 성공"),
     SUCC_HELP_DELETE(HttpStatus.OK.value(), "문의 삭제 성공"),
 
