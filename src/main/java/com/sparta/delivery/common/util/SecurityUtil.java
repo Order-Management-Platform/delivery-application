@@ -6,6 +6,8 @@ import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.product.entity.Product;
 import com.sparta.delivery.product.repository.ProductRepository;
+import com.sparta.delivery.review.Review;
+import com.sparta.delivery.review.ReviewRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
 import com.sparta.delivery.user.entity.User;
@@ -29,6 +31,7 @@ public class SecurityUtil {
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final ReviewRepository reviewRepository;
 
     // 주문 생성 시 orderType check
     public boolean checkOrderPermission(String orderType, Authentication authentication) {
@@ -129,6 +132,7 @@ public class SecurityUtil {
         Product product = productRepository.findById(id)
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
 
+        //todo : Stream으로 구조 변경
         boolean result=false;
         for (Store store : storeList) {
             if(store.getId().equals(product.getStore().getId())) result = true;
@@ -136,6 +140,30 @@ public class SecurityUtil {
 
         log.info("완료: "+result);
         return result;
+    }
+
+    /**
+     *  리뷰 생성자가 맞는지 검사
+     * @param authentication 사용자 정보를 담고 있는 auth 객체
+     * @param reviewId 리뷰 식별자
+     */
+    public boolean isReivewOwner(Authentication authentication, UUID reviewId) {
+        log.info(" 리뷰 생성자가 맞는지 검사");
+
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+
+        List<Review> reviewList = reviewRepository.findByUser(user);
+
+        boolean result=false;
+        for (Review review : reviewList) {
+            if (review.getId().equals(reviewId)) result = true;
+        }
+
+        log.info("완료: "+result);
+        return result;
+
     }
 
 }
