@@ -34,12 +34,13 @@ public class RegionService {
     }
 
     // 지역 조회 로직
-    public ResponsePageDto<RegionResponseDto> getRegion(int page, int size, String sort, boolean asc) {
+    public ResponsePageDto<RegionResponseDto> getRegion(int page, int size, String sort, boolean asc, String keyword) {
         Sort.Direction direction = asc ? Sort.Direction.ASC : Sort.Direction.DESC;
         Sort sortBy = Sort.by(direction, sort);
         Pageable pageable = PageRequest.of(page, size, sortBy);
 
-        Page<Region> regionList = regionRepository.findAll(pageable);
+        Page<Region> regionList = keyword == null ?
+                regionRepository.findAll(pageable) : regionRepository.findAllByNameContaining(keyword, pageable);
         Page<RegionResponseDto> regionResponseDtoPage = regionList.map(RegionResponseDto::of);
         return ResponsePageDto.of(ResponseCode.SUCC_REGION_GET, regionResponseDtoPage);
     }

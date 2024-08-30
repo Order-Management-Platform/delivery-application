@@ -40,38 +40,38 @@ public class OrderController {
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getOrder(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            @RequestParam("sort") String sort,
-            @RequestParam("asc") boolean asc
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(value = "asc", required = false, defaultValue = "false") boolean asc
     ) {
-        return ResponseEntity.ok(orderService.getOrder(page, size, sort, asc));
+        return ResponseEntity.ok(orderService.getOrder(page - 1, size, sort, asc));
     }
 
     // 주문 유저 전체 조회
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/user")
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getUserOrder(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            @RequestParam("sort") String sort,
-            @RequestParam("asc") boolean asc,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(value = "asc", required = false, defaultValue = "false") boolean asc,
             @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        return ResponseEntity.ok(orderService.getUserOrder(page, size, sort, asc, userDetails.getUserId()));
+        return ResponseEntity.ok(orderService.getUserOrder(page - 1, size, sort, asc, userDetails.getUserId()));
     }
 
     // 주문 가게 전체 조회
     @PreAuthorize("hasRole('OWNER') and @securityUtil.checkStoreOwnership(#storeId, authentication)")
     @GetMapping("/store")
     public ResponseEntity<ResponsePageDto<OrderResponseDto>> getStoreOrder(
-            @RequestParam("page") int page,
-            @RequestParam("size") int size,
-            @RequestParam("sort") String sort,
-            @RequestParam("asc") boolean asc,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(value = "asc", required = false, defaultValue = "false") boolean asc,
             @RequestParam("storeId") UUID storeId
     ) {
-        return ResponseEntity.ok(orderService.getStoreOrder(page, size, sort, asc, storeId));
+        return ResponseEntity.ok(orderService.getStoreOrder(page - 1, size, sort, asc, storeId));
     }
 
     // 주문 단건 조회
