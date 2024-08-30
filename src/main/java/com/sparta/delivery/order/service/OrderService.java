@@ -10,6 +10,7 @@ import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.entity.OrderStatus;
 import com.sparta.delivery.order.repository.OrderRepository;
+import com.sparta.delivery.payment.service.PaymentGatewayService;
 import com.sparta.delivery.product.repository.ProductRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
@@ -37,17 +38,20 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
+    private final PaymentGatewayService paymentGatewayService;
 
     public OrderService(
             final UserRepository userRepository,
             final OrderRepository orderRepository,
             final StoreRepository storeRepository,
-            final ProductRepository productRepository
+            final ProductRepository productRepository,
+            final PaymentGatewayService paymentGatewayService
     ) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.storeRepository = storeRepository;
         this.productRepository = productRepository;
+        this.paymentGatewayService = paymentGatewayService;
     }
 
     // 주문 생성 로직
@@ -124,7 +128,7 @@ public class OrderService {
         if (Duration.between(order.getCreatedAt(), currentTime).toMinutes() > 5) {
             throw new CustomBadRequestException(ResponseCode.ORDER_CANCEL_TIME_EXCEEDED);
         }
-
+        paymentGatewayService.cancelPayment(orderId);
         order.cancel(userId);
         order.updateStatus(OrderStatus.CANCELLED);
         return ResponseDto.of(ResponseCode.SUCC_ORDER_CANCLE);
