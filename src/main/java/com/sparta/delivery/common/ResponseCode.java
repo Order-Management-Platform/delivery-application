@@ -38,6 +38,15 @@ public enum ResponseCode {
     SUCC_STORE_MODIFY(HttpStatus.OK.value(),"음식점 수정 성공"),
     SUCC_STORE_DELETE(HttpStatus.OK.value(),"음식점 삭제 성공"),
 
+    //리뷰 성공
+    SUCC_REVIEW_CREAET(HttpStatus.OK.value(), "리뷰 생성 성공"),
+    SUCC_REVIEW_USER_LIST_GET(HttpStatus.OK.value(), "리뷰 사용자 목록 조회 성공"),
+    SUCC_REVIEW_LIST_GET(HttpStatus.OK.value(), "리뷰 목록 조회 성공"),
+    SUCC_REVIEW_MODIFY(HttpStatus.OK.value(), "리뷰 수정 성공"),
+    SUCC_REVIEW_DELETE(HttpStatus.OK.value(), "리뷰 삭제 성공"),
+    SUCC_REVIEW_REPORT(HttpStatus.OK.value(), "리뷰 신고 성공"),
+
+
     //ai 성공
     SUCC_AI_GET(HttpStatus.OK.value(), "ai 음식 설명 요청 성공"),
 
@@ -50,10 +59,10 @@ public enum ResponseCode {
     NOT_FOUND_STORE(HttpStatus.NOT_FOUND.value(), "음식점을 찾을 수 없습니다."),
     NOT_FOUND_PRODUCT(HttpStatus.NOT_FOUND.value(), "상품을 찾을 수 없습니다."),
     NOT_FOUND_STORE_PRODUCT(HttpStatus.NOT_FOUND.value(), "가게에서 상품을 찾을 수 없습니다."),
+    NOT_FOUND_REVIEW(HttpStatus.NOT_FOUND.value(), "리뷰를 찾을 수 없습니다."),
 
     //잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다.")
-
 
     ;
 
