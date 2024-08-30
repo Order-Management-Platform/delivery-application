@@ -44,7 +44,21 @@ public class HelpService {
 
         Page<Help> helpList = helpRepository.findAll(pageable);
         Page<HelpResponseDto> helpResponseDtoPage = helpList.map(HelpResponseDto::of);
+
         return ResponsePageDto.of(ResponseCode.SUCC_HELP_GET, helpResponseDtoPage);
+    }
+
+    // 유저 문의 전체 조회 로직
+    public ResponsePageDto<HelpResponseDto> getUserHelp(int page, int size, String sort, boolean asc, UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                new NotFoundException(ResponseCode.NOT_FOUND_USER));
+
+        Pageable pageable = createCustomPageable(page, size, sort, asc);
+
+        Page<Help> helpList = helpRepository.findAllByUserId(user.getId(), pageable);
+        Page<HelpResponseDto> helpResponseDtoPage = helpList.map(HelpResponseDto::of);
+
+        return ResponsePageDto.of(ResponseCode.SUCC_USER_HELP_GET, helpResponseDtoPage);
     }
 
     // 문의 수정 로직

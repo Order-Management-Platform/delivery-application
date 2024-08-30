@@ -43,6 +43,19 @@ public class HelpController {
         return ResponseEntity.ok(helpService.getHelp(page - 1, size, sort, asc));
     }
 
+    // 유저 문의 전체 조회
+    @GetMapping("/user")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ResponsePageDto<HelpResponseDto>> getUserHelp(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "sort", required = false, defaultValue = "createdAt") String sort,
+            @RequestParam(value = "asc", required = false, defaultValue = "false") boolean asc,
+            @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        return ResponseEntity.ok(helpService.getUserHelp(page - 1, size, sort, asc, userDetails.getUserId()));
+    }
+
     // 문의 수정
     @PutMapping("/{helpId}")
     @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.checkHelpUser(#helpId, authentication)")

@@ -65,6 +65,7 @@ public enum ResponseCode {
     // 고객센터 성공
     SUCC_HELP_CREATE(HttpStatus.OK.value(), "문의 요청 성공"),
     SUCC_HELP_GET(HttpStatus.OK.value(), "문의 전체 조회 성공"),
+    SUCC_USER_HELP_GET(HttpStatus.OK.value(), "유저 문의 전체 조회 성공"),
     SUCC_HELP_UPDATE(HttpStatus.OK.value(), "문의 수정 성공"),
     SUCC_HELP_DELETE(HttpStatus.OK.value(), "문의 삭제 성공"),
 
@@ -85,7 +86,7 @@ public enum ResponseCode {
 
     // 잘못된 접근
     USER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 결제내역만 조회할 수 있습니다."),
-    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다."),
+    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다.")
     ;
 
     private final int status;
