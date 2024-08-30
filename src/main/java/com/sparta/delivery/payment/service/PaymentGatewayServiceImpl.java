@@ -1,6 +1,7 @@
 package com.sparta.delivery.payment.service;
 
 import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.entity.OrderProduct;
@@ -31,9 +32,9 @@ public class PaymentGatewayServiceImpl implements PaymentGatewayService {
     @Override
     public PgResponse paymentByCallback(UUID userId, PaymentRequest request) {
         Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_ORDER));
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
 
         Long totalPrice = order.getProductList().stream().mapToLong(OrderProduct::getPrice).sum();
