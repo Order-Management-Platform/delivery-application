@@ -80,6 +80,9 @@ public enum ResponseCode {
     NOT_FOUND_STORE_PRODUCT(HttpStatus.NOT_FOUND.value(), "가게에서 상품을 찾을 수 없습니다."),
     NOT_FOUND_HELP(HttpStatus.NOT_FOUND.value(), "문의내역을 찾을 수 없습니다."),
 
+    // 주문한 지 5분이 지나면 취소 불가능
+    ORDER_CANCEL_TIME_EXCEEDED(HttpStatus.REQUEST_TIMEOUT.value(), "주문 취소는 주문 후 5분 이내에만 가능합니다. 현재 주문은 취소할 수 없습니다."),
+
     //잘못된 요청
     BAD_REQUEST(HttpStatus.BAD_REQUEST.value(), "잘못된 요청입니다."),
 

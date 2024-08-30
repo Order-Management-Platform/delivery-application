@@ -4,6 +4,7 @@ import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
+import com.sparta.delivery.common.exception.CustomBadRequestException;
 import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
@@ -21,6 +22,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -115,6 +118,13 @@ public class OrderService {
     public ResponseDto cancelOrder(UUID orderId, UUID userId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
+
+        // 현재 시간과 주문 생성 시간을 비교하여 5분이 지났는지 확인
+        LocalDateTime currentTime = LocalDateTime.now();
+        if (Duration.between(order.getCreatedAt(), currentTime).toMinutes() > 5) {
+            throw new CustomBadRequestException(ResponseCode.ORDER_CANCEL_TIME_EXCEEDED);
+        }
+
         order.cancel(userId);
         order.updateStatus(OrderStatus.CANCELLED);
         return ResponseDto.of(ResponseCode.SUCC_ORDER_CANCLE);
