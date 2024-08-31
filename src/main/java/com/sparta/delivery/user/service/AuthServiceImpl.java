@@ -16,7 +16,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     @Override
-//    @Cacheable(cacheNames = "getRole", key = "#email")
+    @Cacheable(cacheNames = "getRole", key = "#email")
     public UserRole getRole(String email) {
         return userRepository.findByEmail(email)
                 .map(User::getRole)

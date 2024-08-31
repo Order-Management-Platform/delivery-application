@@ -23,7 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-//    private final CacheService cacheService;
+    private final CacheService cacheService;
 
 
     @Transactional
@@ -59,9 +59,9 @@ public class UserService {
         updateUserRequest.encodingPassword(encodedPassword);
         String oldRole = user.getRole().name();
 
-//        if (!oldRole.equals(updateUserRequest.getRole().name())) {
-//            cacheService.evictRole(user.getEmail());
-//        }
+        if (!oldRole.equals(updateUserRequest.getRole().name())) {
+            cacheService.evictRole(user.getEmail());
+        }
 
         user.updateUser(updateUserRequest);
     }
