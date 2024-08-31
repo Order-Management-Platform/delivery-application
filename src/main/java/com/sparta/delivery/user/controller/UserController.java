@@ -1,11 +1,12 @@
 package com.sparta.delivery.user.controller;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.dto.*;
+import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.common.dto.ResponsePageDto;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
-import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,8 +15,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,14 +34,7 @@ public class UserController {
     }
 
     @PostMapping("/signUp")
-    public ResponseEntity<?> createUser(@Validated @RequestBody SignUpRequest signUpRequest,
-                                        BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(ErrorsResponseDto.of(ResponseCode.BAD_REQUEST, FieldError.of(bindingResult)));
-        }
-
+    public ResponseEntity<?> createUser(@Validated @RequestBody SignUpRequest signUpRequest) {
         userService.createUser(signUpRequest);
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_USER_CREATE));
     }
@@ -67,14 +59,8 @@ public class UserController {
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{userId}")
     public ResponseEntity<?> updateUser(@PathVariable("userId") UUID userId,
-                                        @Validated @RequestBody UpdateUserRequest updateUserRequest,
-                                        BindingResult bindingResult)
+                                        @Validated @RequestBody UpdateUserRequest updateUserRequest)
     {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(ErrorsResponseDto.of(ResponseCode.BAD_REQUEST, FieldError.of(bindingResult)));
-        }
         userService.updateUser(userId, updateUserRequest);
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_USER_MODIFY));
     }

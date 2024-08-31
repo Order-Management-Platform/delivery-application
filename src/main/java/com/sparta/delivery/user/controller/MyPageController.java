@@ -1,8 +1,6 @@
 package com.sparta.delivery.user.controller;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.dto.ErrorsResponseDto;
-import com.sparta.delivery.common.dto.FieldError;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
@@ -13,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,15 +34,8 @@ public class MyPageController {
 
     @PutMapping
     public ResponseEntity<?> UpdateMyPage(@Validated @RequestBody UpdateMyPageRequest updateMyPageRequest,
-                                                    BindingResult bindingResult,
-                                                    @AuthenticationPrincipal UserDetailsImpl userDetails)
+                                          @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
-        if (bindingResult.hasErrors()) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(ErrorsResponseDto.of(ResponseCode.BAD_REQUEST, FieldError.of(bindingResult)));
-        }
-
         UUID userId = userDetails.getUserId();
         myPageService.updateMyPage(userId, updateMyPageRequest);
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_USER_MODIFY));
