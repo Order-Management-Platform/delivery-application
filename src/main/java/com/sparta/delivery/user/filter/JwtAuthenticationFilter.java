@@ -2,6 +2,7 @@ package com.sparta.delivery.user.filter;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.user.dto.SignInRequest;
 import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.jwt.JwtUtil;
@@ -72,6 +73,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        jwtUtil.errorMessageResponse(response, "email 또는 password 가 일치하지 않습니다.");
+        jwtUtil.errorMessageResponse(response, ResponseCode.NOT_MATCH_LOGIN_INFO);
     }
 }

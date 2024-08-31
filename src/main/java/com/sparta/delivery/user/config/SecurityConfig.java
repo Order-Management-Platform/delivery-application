@@ -1,11 +1,13 @@
 package com.sparta.delivery.user.config;
 
+import com.sparta.delivery.user.filter.CustomAccessDeniedHandler;
+import com.sparta.delivery.user.filter.JwtAuthenticationEntryPoint;
 import com.sparta.delivery.user.filter.JwtAuthenticationFilter;
 import com.sparta.delivery.user.filter.JwtAuthorizationFilter;
 import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
 import com.sparta.delivery.user.service.AuthService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,7 +16,6 @@ import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,12 +24,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @EnableWebSecurity
 @Configuration
-@RequiredArgsConstructor
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
@@ -36,6 +38,15 @@ public class SecurityConfig {
     private final AuthService authService;
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final HandlerExceptionResolver resolver;
+
+    public SecurityConfig(JwtUtil jwtUtil, AuthService authService, UserDetailsServiceImpl userDetailsService, AuthenticationConfiguration authenticationConfiguration,@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.jwtUtil = jwtUtil;
+        this.authService = authService;
+        this.userDetailsService = userDetailsService;
+        this.authenticationConfiguration = authenticationConfiguration;
+        this.resolver = resolver;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -54,7 +65,9 @@ public class SecurityConfig {
 
                 )
                 .addFilterBefore(jwtAuthorizationFilter(), JwtAuthenticationFilter.class)
-                .addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(handler -> handler.authenticationEntryPoint(jwtAuthenticationEntryPoint()).accessDeniedHandler(accessDeniedHandler()))
+        ;
 
 
         return http.build();
@@ -92,6 +105,16 @@ public class SecurityConfig {
     @Bean
     public static RoleHierarchy roleHierarchy() {
         return RoleHierarchyImpl.fromHierarchy("ROLE_MASTER > ROLE_MANAGER > ROLE_OWNER > ROLE_CUSTOMER");
+    }
+
+    @Bean
+    public AuthenticationEntryPoint jwtAuthenticationEntryPoint() {
+        return new JwtAuthenticationEntryPoint(resolver);
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler(jwtUtil);
     }
 
 }
