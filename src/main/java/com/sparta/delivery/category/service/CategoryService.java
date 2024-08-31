@@ -24,6 +24,9 @@ public class CategoryService {
 
     @Transactional
     public void createCategory(String categoryName) {
+        if (categoryRepository.existsByName(categoryName)) {
+            throw new BusinessException(ResponseCode.DUPLICATE_CATEGORY);
+        }
         Category category = new Category(categoryName);
         categoryRepository.save(category);
     }
@@ -36,6 +39,10 @@ public class CategoryService {
 
     @Transactional
     public void updateCategory(UUID categoryId, UpdateCategoryRequest updateCategoryRequest) {
+        if (categoryRepository.existsByName(updateCategoryRequest.getName())) {
+            throw new BusinessException(ResponseCode.DUPLICATE_CATEGORY);
+        }
+
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_CATEGORY));
         category.updateName(updateCategoryRequest.getName());

@@ -64,7 +64,7 @@ public enum ResponseCode {
     //카테고리 성공
     SUCC_CATEGORY_CREATE(HttpStatus.OK.value(),"카테고리 생성 성공"),
     SUCC_CATEGORY_LIST_GET(HttpStatus.OK.value(),"카테고리 목록 조회 성공"),
-    SUCC_CATEGORY_MODIFY(HttpStatus.OK.value(),"카테고리 취소 성공"),
+    SUCC_CATEGORY_MODIFY(HttpStatus.OK.value(),"카테고리 수정 성공"),
     SUCC_CATEGORY_DELETE(HttpStatus.OK.value(),"카테고리 삭제 성공"),
 
 
@@ -108,9 +108,10 @@ public enum ResponseCode {
     USER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 결제내역만 조회할 수 있습니다."),
     STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다."),
 
-    //이메일 중복
+    //중복
     DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST.value(), "중복된 Email 입니다."),
-    
+    DUPLICATE_CATEGORY(HttpStatus.BAD_REQUEST.value(), "중복된 카테고리 입니다."),
+
     // jwt 관련 error
     NOT_MATCH_ROLE(HttpStatus.UNAUTHORIZED.value(), "JWT 권한과 실제 권한이 맞지 않습니다."),
     NOT_PRESENT_JWT(HttpStatus.UNAUTHORIZED.value(), "JWT 토큰이 존재하지 않습니다."),

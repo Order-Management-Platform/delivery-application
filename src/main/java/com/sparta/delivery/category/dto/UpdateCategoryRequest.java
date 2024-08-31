@@ -2,9 +2,11 @@ package com.sparta.delivery.category.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UpdateCategoryRequest {
 
     private String name;
