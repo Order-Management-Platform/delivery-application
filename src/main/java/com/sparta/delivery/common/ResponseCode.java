@@ -106,8 +106,20 @@ public enum ResponseCode {
 
     // 잘못된 접근
     USER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 결제내역만 조회할 수 있습니다."),
-    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다.")
-    ;
+    STORE_OWNER_DENIED_ACCESS_PAYMENT(HttpStatus.UNAUTHORIZED.value(),"본인의 가게 결제내역만 조회할 수 있습니다."),
+
+    //이메일 중복
+    DUPLICATE_EMAIL(HttpStatus.BAD_REQUEST.value(), "중복된 Email 입니다."),
+    
+    // jwt 관련 error
+    NOT_MATCH_ROLE(HttpStatus.UNAUTHORIZED.value(), "JWT 권한과 실제 권한이 맞지 않습니다."),
+    NOT_PRESENT_JWT(HttpStatus.UNAUTHORIZED.value(), "JWT 토큰이 존재하지 않습니다."),
+    INVALID_JWT_SIGNATURE(HttpStatus.UNAUTHORIZED.value(), "유효하지 않는 JWT 서명 입니다."),
+    EXPIRED_JWT(HttpStatus.UNAUTHORIZED.value(), "만료된 JWT token 입니다."),
+    UNSUPPORTED_JWT(HttpStatus.UNAUTHORIZED.value(), "지원되지 않는 JWT 토큰 입니다."),
+    EMPTY_JWT_CLAIMS(HttpStatus.UNAUTHORIZED.value(), "잘못된 JWT 토큰 입니다."),
+    NOT_MATCH_LOGIN_INFO(HttpStatus.UNAUTHORIZED.value(), "email 또는 password 가 일치하지 않습니다."),
+    ACCESS_DENIED(HttpStatus.FORBIDDEN.value(), "해당 요청에 권한이 없습니다.");
 
     private final int status;
     private final String message;
