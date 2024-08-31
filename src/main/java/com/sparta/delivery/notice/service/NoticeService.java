@@ -1,7 +1,7 @@
 package com.sparta.delivery.notice.service;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.notice.dto.CreateNoticeRequest;
 import com.sparta.delivery.notice.dto.NoticeListResponse;
 import com.sparta.delivery.notice.dto.NoticeResponse;
@@ -43,18 +43,18 @@ public class NoticeService {
     public NoticeResponse getNotice(UUID noticeId, UserRole role) {
         if (role == UserRole.CUSTOMER) {
             return noticeRepository.findByIdAndNoticeAccess(noticeId, NoticeAccess.CUSTOMER).map(NoticeResponse::of)
-                    .orElseThrow(()-> new NotFoundException(ResponseCode.NOT_FOUND_NOTICE));
+                    .orElseThrow(()-> new BusinessException(ResponseCode.NOT_FOUND_NOTICE));
         }
 
         return noticeRepository.findById(noticeId).map(NoticeResponse::of)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTICE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_NOTICE));
     }
 
 
     @Transactional
     public void updateNotice(UUID noticeId, UpdateNoticeRequest updateNoticeRequest) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTICE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_NOTICE));
 
         notice.update(updateNoticeRequest);
     }
@@ -62,7 +62,7 @@ public class NoticeService {
     @Transactional
     public void deleteNotice(UUID noticeId, UUID userId) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_NOTICE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_NOTICE));
 
         notice.delete(userId);
     }

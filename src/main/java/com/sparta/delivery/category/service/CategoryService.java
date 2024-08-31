@@ -5,7 +5,7 @@ import com.sparta.delivery.category.dto.UpdateCategoryRequest;
 import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.category.repository.CategoryRepository;
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +37,7 @@ public class CategoryService {
     @Transactional
     public void updateCategory(UUID categoryId, UpdateCategoryRequest updateCategoryRequest) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_CATEGORY));
         category.updateName(updateCategoryRequest.getName());
     }
 
@@ -45,7 +45,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(UUID categoryId, UUID userId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_CATEGORY));
         category.delete(userId);
         category.markDeleted(userId);
     }

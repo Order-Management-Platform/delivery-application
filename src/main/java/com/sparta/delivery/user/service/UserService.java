@@ -1,7 +1,7 @@
 package com.sparta.delivery.user.service;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
@@ -30,6 +30,11 @@ public class UserService {
     public void createUser(SignUpRequest signUpRequest) {
         String encodedPassword = passwordEncoder.encode(signUpRequest.getPassword());
         signUpRequest.encodingPassword(encodedPassword);
+
+        if (checkEmail(signUpRequest.getEmail())) {
+            throw new BusinessException(ResponseCode.DUPLICATE_EMAIL);
+        }
+
         User user = User.toEntity(signUpRequest);
         userRepository.save(user);
     }
@@ -41,7 +46,7 @@ public class UserService {
     public UserInfoResponse getUserInfo(UUID userId) {
         return userRepository.findById(userId)
                 .map(UserInfoResponse::of)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
     }
 
 
@@ -49,7 +54,7 @@ public class UserService {
     @Transactional
     public void updateUser(UUID userId, UpdateUserRequest updateUserRequest) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
         String encodedPassword = passwordEncoder.encode(updateUserRequest.getPassword());
         updateUserRequest.encodingPassword(encodedPassword);
         String oldRole = user.getRole().name();
@@ -65,7 +70,7 @@ public class UserService {
     @Transactional
     public void deleteUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         user.delete(userId);
     }
