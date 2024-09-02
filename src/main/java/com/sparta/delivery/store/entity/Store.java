@@ -52,7 +52,8 @@ public class Store extends BaseEntity {
     private String name;
     private String address;
     private String tel;
-    private Integer minPrice;
+    @Builder.Default
+    private Integer minPrice=12000;
     private String description;
     private String operatingTime;
 
