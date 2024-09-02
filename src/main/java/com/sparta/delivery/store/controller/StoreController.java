@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,76 +28,98 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class StoreController {
 
-    //todo : 생성한 resource가 맞는지 확인하는 로직 추가
     private final StoreService storeService;
 
     //관리자 페이지 - 가게 생성
+    //todo : test용 관리자 페이지에서 구현 필요
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/{userId}")
-    public ResponseDto createStore(@PathVariable UUID userId, @RequestBody Map<String, String> map) {
+    public ResponseEntity<ResponseDto> createStore(@PathVariable UUID userId, @RequestBody Map<String, String> map) {
         storeService.createStore(userId, map);
-        return ResponseDto.of(ResponseCode.SUCC_STORE_CREATE);
+
+        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_STORE_CREATE);
+        return ResponseEntity.ok(response);
     }
 
-
     /**
-     * 음식점 조회
+     * 음식점 사용자 조회
+     * @param keyWord       검색어
+     * @param page          조회 페이지
+     * @param size          조회 페이지 사이즈
+     * @param asc           정렬 방향
+1    * @param sort          정렬 기준
+     * @param categoryId    카테코리 식별자
+     * @param regionId      지역 실벽자
      */
-    //todo : request dto로 변경
-    //todo : 조회 sql 리팩토링 필요 - keyword포함에 대해
     @GetMapping
-    public ResponsePageDto getStoreList(@RequestParam(required = false, defaultValue = "1") int page,
-                                                   @RequestParam(required = false, defaultValue = "10") int size,
-                                                   @RequestParam(required = false, defaultValue = "false") boolean asc,
-                                                   //@RequestParam(required = false, defaultValue = "name") String sort,
-                                                   @RequestParam(required = false, defaultValue="") String keyWord,
-                                                   @RequestParam(required = false,defaultValue="") UUID categoryId,
-                                                   @RequestParam(required=true) UUID regionId
+    public ResponseEntity<ResponsePageDto> getStoreList(@RequestParam(required = false, defaultValue="") String keyWord,
+                                                        @RequestParam(required = false, defaultValue = "1") int page,
+                                                        @RequestParam(required = false, defaultValue = "10") int size,
+                                                        @RequestParam(required = false, defaultValue = "false") boolean asc,
+                                                        @RequestParam(required = false, defaultValue = "name") String sort,
+                                                        @RequestParam(required = false,defaultValue="") UUID categoryId,
+                                                        @RequestParam(required=true) UUID regionId
     ) {
-        Pageable pageable = asc ? PageRequest.of(page-1, size, Sort.by("name").ascending()) :
-                PageRequest.of(page-1, size, Sort.by("name").descending());
+        Pageable pageable = asc ? PageRequest.of(page-1, size, Sort.by(sort).ascending()) :
+                PageRequest.of(page-1, size, Sort.by(sort).descending());
         Page<StoreListResponseDto> data = storeService.getStoreList(categoryId, regionId, keyWord, pageable);
-        return ResponsePageDto.of(ResponseCode.SUCC_STORE_LIST_GET, data);
+
+        ResponsePageDto response=ResponsePageDto.of(ResponseCode.SUCC_STORE_LIST_GET, data);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * 음식점 사장님 조회
+     * @param principal  사용자 정보를 담고 있는 객체
      */
-    //owener - 지역 파라미터 필수 , owner도 getStoreList()메서드에 접근 가능
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/ownerList")
-    public ResponseSingleDto getStoreOwnerList(Principal principal){
+    public ResponseEntity<ResponseSingleDto> getStoreOwnerList(Principal principal){
         List<Store> data=storeService.getOwnerStoreList(principal);
-        return ResponseSingleDto.of(ResponseCode.SUCC_STORE_OWNER_LIST_GET, data);
 
+        ResponseSingleDto response=ResponseSingleDto.of(ResponseCode.SUCC_STORE_OWNER_LIST_GET, data);
+        return ResponseEntity.ok(response);
     }
 
     /**
-     *  음식점 상세조회
+     * 음식점 상세조회
+     * @param storeId   음식점 식별자
      */
     @GetMapping("/{storeId}")
-    public ResponseSingleDto getStore(@PathVariable UUID storeId) {
-        StoreGetResponseDto data= storeService.getStore(storeId);
-        return ResponseSingleDto.of(ResponseCode.SUCC_STORE_GET, data);
+    public ResponseEntity<ResponseSingleDto> getStore(@PathVariable UUID storeId) {
+        StoreGetResponseDto data = storeService.getStore(storeId);
+
+        ResponseSingleDto<StoreGetResponseDto> response = ResponseSingleDto.of(ResponseCode.SUCC_STORE_GET, data);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * 음식점 수정
+     * @param storeId   음식점 식별자
+     * @param dto       음식점 정보 dto
+     * 리소스 접근 사용자와 음식점 생성자가 동일한지 검사
      */
     @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
     @PutMapping("/{storeId}")
-    public ResponseDto ModifyStore(@PathVariable UUID storeId, @RequestBody StoreModifyRequestDto dto) {
+    public ResponseEntity<ResponseDto> ModifyStore(@PathVariable UUID storeId, @RequestBody StoreModifyRequestDto dto) {
         storeService.modifyStore(storeId, dto);
-        return ResponseDto.of(ResponseCode.SUCC_STORE_MODIFY);
+
+        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_STORE_MODIFY);
+        return ResponseEntity.ok(response);
     }
 
     /**
      * 음식점 삭제
+     * @param storeId     음식점 식별자
+     * @param principal   사용자 정보를 담고 있는 객체
+     * 리소스 접근 사용자와 음식점 생성자가 동일한지 검사
      */
     @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
     @DeleteMapping("/{storeId}")
-    public ResponseDto deleteStore(@PathVariable UUID storeId) {
-        storeService.deleteStore(storeId);
-        return ResponseDto.of(ResponseCode.SUCC_STORE_DELETE);
+    public ResponseEntity<ResponseDto> deleteStore(@PathVariable UUID storeId, Principal principal) {
+        storeService.deleteStore(storeId, principal);
+
+        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_STORE_DELETE);
+        return ResponseEntity.ok(response);
     }
 }

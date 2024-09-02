@@ -1,5 +1,6 @@
-package com.sparta.delivery.review;
+package com.sparta.delivery.review.repository;
 
+import com.sparta.delivery.review.entity.Review;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.user.entity.User;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface ReviewRepository extends JpaRepository<Review, UUID>,ReviewCustomRepository{
+public interface ReviewRepository extends JpaRepository<Review, UUID>, ReviewCustomRepository {
 
     List<Review> findByUser(User user);
 

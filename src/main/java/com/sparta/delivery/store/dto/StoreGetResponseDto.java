@@ -17,6 +17,7 @@ public class StoreGetResponseDto {
     private String description;
     private String operatingTime;
     private String address;
+    private int rating;
 
     public static StoreGetResponseDto of(Store store) {
 
@@ -28,6 +29,7 @@ public class StoreGetResponseDto {
                 .description(store.getDescription())
                 .operatingTime(store.getOperatingTime())
                 .address(store.getAddress())
+                .rating(store.getRating())
                 .build();
     }
 }

@@ -8,6 +8,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReviewModifyRequestDto {
-    private String conent;
+    private String content;
     private int rating;
 }

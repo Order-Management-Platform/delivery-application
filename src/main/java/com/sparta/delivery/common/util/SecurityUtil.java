@@ -8,8 +8,8 @@ import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.repository.OrderRepository;
 import com.sparta.delivery.product.entity.Product;
 import com.sparta.delivery.product.repository.ProductRepository;
-import com.sparta.delivery.review.Review;
-import com.sparta.delivery.review.ReviewRepository;
+import com.sparta.delivery.review.entity.Review;
+import com.sparta.delivery.review.repository.ReviewRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
 import com.sparta.delivery.user.entity.User;
@@ -103,27 +103,34 @@ public class SecurityUtil {
 
     /**
      * 음식점의 사장이 맞는지 검사
+     * @param authentication 사용자 정보를 담고 있는 객체
+     * @param StoreId 음식점 식별자
+     * @return 리소스의 접근을 false혹은 true로 반환합니다.
      */
     public boolean isStoreOwner(Authentication authentication, UUID StoreId) {
         log.info(" 음식점 사장이 맞는지 검사");
+
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         List<Store> storeList = storeRepository.findAllByUser(user);
+        if(storeList.isEmpty()) throw new NotFoundException(ResponseCode.NOT_FOUND_STORE);
 
-        boolean result=false;
-        for (Store store : storeList) {
-            if(store.getId().equals(StoreId)) result = true;
-        }
+        boolean result = storeList.stream()
+                .anyMatch(store -> store.getId().equals(StoreId));
+
         log.info("완료: "+result);
         return result;
     }
 
     /**
      * 상품이 포함되어 있는 음식점의 사장인지 검사
+     * @param authentication 사용자 정보를 담고 있는 객체
+     * @param productId 상품 식별자
+     * @return 리소스의 접근을 false혹은 true로 반환합니다.
      */
-    public boolean isProductOwner(Authentication authentication, UUID id) {
+    public boolean isProductOwner(Authentication authentication, UUID productId) {
         log.info(" 상품이 포함되어 있는 음식점의 사장인지 검사");
 
         String email = authentication.getName();
@@ -131,15 +138,13 @@ public class SecurityUtil {
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         List<Store> storeList = storeRepository.findAllByUser(user);
+        if(storeList.isEmpty()) throw new NotFoundException(ResponseCode.NOT_FOUND_STORE);
 
-        Product product = productRepository.findById(id)
+        Product product = productRepository.findById(productId)
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
 
-        //todo : Stream으로 구조 변경
-        boolean result=false;
-        for (Store store : storeList) {
-            if(store.getId().equals(product.getStore().getId())) result = true;
-        }
+        boolean result=storeList.stream()
+                .anyMatch(store -> store.getId().equals(product.getStore().getId()));
 
         log.info("완료: "+result);
         return result;
@@ -149,20 +154,20 @@ public class SecurityUtil {
      *  리뷰 생성자가 맞는지 검사
      * @param authentication 사용자 정보를 담고 있는 auth 객체
      * @param reviewId 리뷰 식별자
+     * @return 리소스의 접근을 false혹은 true로 반환합니다.
      */
     public boolean isReivewOwner(Authentication authentication, UUID reviewId) {
         log.info(" 리뷰 생성자가 맞는지 검사");
 
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         List<Review> reviewList = reviewRepository.findByUser(user);
+        if(reviewList.isEmpty()) throw new NotFoundException(ResponseCode.NOT_FOUND_REVIEW);
 
-        boolean result=false;
-        for (Review review : reviewList) {
-            if (review.getId().equals(reviewId)) result = true;
-        }
+        boolean result = reviewList.stream()
+                .anyMatch(review -> review.getId().equals(reviewId));
 
         log.info("완료: "+result);
         return result;

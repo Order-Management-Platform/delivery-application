@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.UUID;
 @Table(name = "p_store")
 @Getter
 @Builder
+@SQLRestriction("deleted_at IS NULL")
 public class Store extends BaseEntity {
 
     @Id
@@ -28,7 +30,7 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name="user_id")
     private User user;
 
@@ -52,4 +54,19 @@ public class Store extends BaseEntity {
     private Integer minPrice;
     private String description;
     private String operatingTime;
+
+    @Builder.Default
+    private int rating=0;
+
+    @Builder.Default
+    private int total_rating = 0;
+
+    @Builder.Default
+    private int review_count=0;
+
+    public void ratingCalculation(int reviewRating) {
+        this.total_rating += reviewRating;
+        this.review_count++;
+        this.rating = total_rating / review_count;
+    }
 }

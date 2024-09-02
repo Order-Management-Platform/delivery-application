@@ -1,6 +1,5 @@
 package com.sparta.delivery.review.dto;
 
-import com.sparta.delivery.review.Review;
 import lombok.*;
 
 import java.util.UUID;
