@@ -1,6 +1,7 @@
 package com.sparta.delivery.common.dto;
 
 import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.store.dto.StoreGetResponseDto;
 import lombok.*;
 
 @Getter
@@ -12,6 +13,7 @@ public class ResponseSingleDto<T> {
     private String message;
     private T content;
 
+    //todo : enum파라미터 생성자로 대체
     public static <T> ResponseSingleDto<T> of(final int status, final String message, final T content) {
         return ResponseSingleDto.<T>builder()
                 .status(status)
@@ -27,4 +29,6 @@ public class ResponseSingleDto<T> {
                 .content(content)
                 .build();
     }
+
+
 }

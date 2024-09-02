@@ -1,6 +1,7 @@
 package com.sparta.delivery.user.filter;
 
 
+import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,7 +28,7 @@ import java.io.IOException;
 public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsService userDetailsService;
     private final AuthService authService;
 
 
@@ -38,15 +40,19 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-
+        String requestURI = req.getRequestURI();
         String tokenValue = jwtUtil.getJwtFromHeader(req);
+        if (requestURI.equals("/user/signUp") || requestURI.equals("/user/signIn")) {
+            filterChain.doFilter(req, res);
+            return;
+        }
+
 
         if (StringUtils.hasText(tokenValue)) {
 
-            String errorMessage = jwtUtil.validateToken(tokenValue);
-            if (StringUtils.hasText(errorMessage)) {
-                jwtUtil.errorMessageResponse(res, errorMessage);
-
+            ResponseCode responseCode = jwtUtil.validateToken(tokenValue);
+            if (responseCode != null) {
+                jwtUtil.errorMessageResponse(res, responseCode);
                 return;
             }
 
@@ -55,20 +61,24 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String email = info.get("email", String.class);
 
 
-            if (!role.equals(UserRole.CUSTOMER.name()) && !authService.isRoleMatch(email, role)) {
-                jwtUtil.errorMessageResponse(res, "토큰 권한과 실제 권한이 맞지 않습니다.");
+            if (!role.equals(UserRole.CUSTOMER.name()) && !isRoleMatch(email, role)) {
+                jwtUtil.errorMessageResponse(res, ResponseCode.NOT_MATCH_ROLE);
                 return;
             }
 
             try {
                 setAuthentication(email);
             } catch (UsernameNotFoundException e) {
-                jwtUtil.errorMessageResponse(res, e.getMessage());
+                jwtUtil.errorMessageResponse(res, ResponseCode.NOT_FOUND_USER);
                 return;
             }
         }
-
         filterChain.doFilter(req, res);
+    }
+
+    private boolean isRoleMatch(String email, String role) {
+        UserRole userRole = authService.getRole(email);
+        return role.equals(userRole.name());
     }
 
 

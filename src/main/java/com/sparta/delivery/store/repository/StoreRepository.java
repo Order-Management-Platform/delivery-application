@@ -12,9 +12,7 @@ import java.util.UUID;
 
 
 @Repository
-public interface StoreRepository extends JpaRepository<Store, UUID> {
+public interface StoreRepository extends JpaRepository<Store, UUID>,StoreCustomRepository {
     List<Store> findAllByUser(User user);
 
-    Page<Store> findAllByCategoryIdAndRegionIdAndNameContaining(UUID categoryId, UUID regionId, String name, Pageable pageable);
-    Page<Store> findAllByRegionIdAndNameContaining(UUID regionId, String name, Pageable pageable);
 }

@@ -8,4 +8,5 @@ import java.util.UUID;
 public interface PaymentGatewayService {
 
     PgResponse paymentByCallback(UUID userId, PaymentRequest request);
+    void cancelPayment(UUID orderId);
 }

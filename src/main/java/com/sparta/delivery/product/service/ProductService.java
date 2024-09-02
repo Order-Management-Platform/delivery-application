@@ -10,6 +10,8 @@ import com.sparta.delivery.product.entity.Product;
 import com.sparta.delivery.product.repository.ProductRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
+import com.sparta.delivery.user.entity.User;
+import com.sparta.delivery.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,11 +30,12 @@ public class ProductService {
 
     private final StoreRepository storeRepository;
     private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
     //상품 생성
     public void createProduct(ProductCreateRequestDto dto,UUID storeId) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
 
         Product product = Product.builder()
                 .name(dto.getName())
@@ -45,8 +49,8 @@ public class ProductService {
 
     //가게 내 상품 조회
     public  Page<ProductListResponseDto> getStoreProductList(UUID storeId,String keyWord, Pageable pageable) {
-        productRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE.getMessage()));
+        storeRepository.findById(storeId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
         Page<Product> product = productRepository.findAllByStoreIdAndNameContaining(storeId,keyWord, pageable);
         return product.map(ProductListResponseDto::of);
     }
@@ -54,7 +58,7 @@ public class ProductService {
     //상품 상세 조회
     public ProductResponseDto getProduct(UUID productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
         return ProductResponseDto.of(product);
     }
 
@@ -62,7 +66,7 @@ public class ProductService {
     @Transactional
     public void modifyProduct(UUID productId, ProductModifyRequestDto dto) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
         product.modify(dto);
         productRepository.save(product);
     }
@@ -71,16 +75,18 @@ public class ProductService {
     @Transactional
     public void modifyProductStatus(UUID productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
         productRepository.modifyStatus(productId,!product.getSoldOut());
     }
 
     //상품 삭제
     @Transactional
-    public void deleteProduct(UUID productId) {
-        Product product=productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT.getMessage()));
-        productRepository.delete(product);
+    public void deleteProduct(UUID productId, Principal principal) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+        User user=userRepository.findByEmail(principal.getName())
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_USER));
+        product.markDeleted(user.getId());
     }
 
 }

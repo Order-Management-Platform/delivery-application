@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://<url>:<port>/<database>
+    username: <ID>
+    password: <PASSWORD>
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      username: default
+      password: systempass
+  jpa:
+    hibernate:
+      ddl-auto: none # 최초시작시에는 어떻게 하나? 정석이라면 db 는 db 쪽에서설계완료하고 실행하기떄문에 none 이 맞으려나?
+    database: postgresql
+
+jwt:
+  secret:
+    access-expiration: 3600000
+    key: 7Iqk7YyM66W07YOA7L2U65Sp7YG065+9U3ByaW5n6rCV7J2Y7Yqc7YSw7LWc7JuQ67mI7J6F64uI64ukLg==
+api:
+  secret:
+    key: google_ai_secret_key

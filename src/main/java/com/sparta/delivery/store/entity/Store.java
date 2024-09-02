@@ -4,12 +4,14 @@ import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.product.entity.Product;
 import com.sparta.delivery.region.entity.Region;
+import com.sparta.delivery.store.dto.StoreModifyRequestDto;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.UUID;
 @Table(name = "p_store")
 @Getter
 @Builder
+@SQLRestriction("deleted_at IS NULL")
 public class Store extends BaseEntity {
 
     @Id
@@ -28,7 +31,7 @@ public class Store extends BaseEntity {
     @Column(nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name="user_id")
     private User user;
 
@@ -49,7 +52,35 @@ public class Store extends BaseEntity {
     private String name;
     private String address;
     private String tel;
-    private Integer minPrice;
+    @Builder.Default
+    private Integer minPrice=12000;
     private String description;
     private String operatingTime;
+
+    @Builder.Default
+    private int rating=0;
+
+    @Builder.Default
+    private int total_rating = 0;
+
+    @Builder.Default
+    private int review_count=0;
+
+    public void ratingCalculation(int reviewRating) {
+        this.total_rating += reviewRating;
+        this.review_count++;
+        this.rating = total_rating / review_count;
+    }
+
+    public void modify(StoreModifyRequestDto dto, Category category, Region region) {
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.tel = dto.getTel();
+        this.minPrice = dto.getMinPrice();
+        this.address = dto.getAddress();
+        this.operatingTime = dto.getOperatingTime();
+        this.category = category;
+        this.region = region;
+    }
+
 }

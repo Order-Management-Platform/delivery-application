@@ -1,6 +1,7 @@
 package com.sparta.delivery.user.service;
 
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
 import com.sparta.delivery.user.dto.UserInfoResponse;
@@ -8,7 +9,6 @@ import com.sparta.delivery.user.entity.User;
 import com.sparta.delivery.user.entity.UserRole;
 import com.sparta.delivery.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,8 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @Transactional
@@ -93,7 +94,8 @@ class MyPageServiceTest {
         em.flush();
         em.clear();
 
-        User updateUser = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("not found"));
+        User updateUser = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
         //
         assertThat(passwordEncoder.matches(password, updateUser.getPassword())).isTrue();
         assertThat(updateUser.getPhone()).isEqualTo(updateMyPageRequest.getPhone());
@@ -113,8 +115,8 @@ class MyPageServiceTest {
 
         assertThatThrownBy(()->{
             myPageService.myPageInfo(email);
-        }).isInstanceOf(NotFoundException.class)
-                .hasMessage("회원 정보를 찾을 수 없습니다.");
+        }).isInstanceOf(BusinessException.class)
+                .hasMessage(ResponseCode.NOT_FOUND_USER.getMessage());
     }
 
 

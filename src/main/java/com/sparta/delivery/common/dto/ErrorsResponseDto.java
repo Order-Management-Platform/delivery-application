@@ -18,14 +18,13 @@ public class ErrorsResponseDto<T> {
 
     private final int status;
     private final String errorMessage;
-    private final List<T> errorMessages;
-
+    private final List<T> errors;
 
     public static <T> ErrorsResponseDto<T> of(final ResponseCode errorCode, List<T> errorMessages) {
         return ErrorsResponseDto.<T>builder()
                 .status(errorCode.getStatus())
-                .errorMessage(errorMessages.size() == 1 ? errorMessages.get(0).toString() : null)
-                .errorMessages(errorMessages.size() != 1 ? errorMessages : null)
+                .errorMessage("검증 실패")
+                .errors(errorMessages)
                 .build();
     }
 

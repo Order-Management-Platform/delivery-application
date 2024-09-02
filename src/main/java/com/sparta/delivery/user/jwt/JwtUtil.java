@@ -1,14 +1,14 @@
 package com.sparta.delivery.user.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.delivery.common.dto.ResponseDto;
+import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.common.dto.ErrorResponseDto;
 import com.sparta.delivery.user.entity.UserRole;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -57,18 +57,18 @@ public class JwtUtil {
         return null;
     }
 
-    public String validateToken(String token) {
+    public ResponseCode validateToken(String token) {
         try {
             getUserInfoFromToken(token);
             return null;
         } catch (SecurityException | MalformedJwtException | SignatureException e) {
-            return "Invalid JWT signature, 유효하지 않는 JWT 서명 입니다.";
+            return ResponseCode.INVALID_JWT_SIGNATURE;
         } catch (ExpiredJwtException e) {
-            return "Expired JWT token, 만료된 JWT token 입니다.";
+            return ResponseCode.EXPIRED_JWT;
         } catch (UnsupportedJwtException e) {
-            return "Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.";
+            return ResponseCode.UNSUPPORTED_JWT;
         } catch (IllegalArgumentException e) {
-            return "JWT claims is empty, 잘못된 JWT 토큰 입니다.";
+            return ResponseCode.EMPTY_JWT_CLAIMS;
         }
     }
 
@@ -78,12 +78,12 @@ public class JwtUtil {
     }
 
 
-    public void errorMessageResponse(HttpServletResponse res, String errorMessage) throws IOException {
-        res.setStatus(HttpStatus.UNAUTHORIZED.value());
+    public void errorMessageResponse(HttpServletResponse res, ResponseCode responseCode) throws IOException {
+        res.setStatus(responseCode.getStatus());
         res.setContentType(MediaType.APPLICATION_JSON_VALUE);
         res.setCharacterEncoding(StandardCharsets.UTF_8.name());
 
-        ResponseDto responseDto = ResponseDto.of(HttpStatus.UNAUTHORIZED.value(), errorMessage);
+        ErrorResponseDto responseDto = ErrorResponseDto.of(responseCode);
         ObjectMapper mapper = new ObjectMapper();
         String jsonResponse = mapper.writeValueAsString(responseDto);
         res.getWriter().write(jsonResponse);

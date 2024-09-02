@@ -14,7 +14,7 @@ import java.util.UUID;
 public class OrderProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_product_id", columnDefinition = "BINARY(16)")
+    @Column(name = "order_product_id")
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)

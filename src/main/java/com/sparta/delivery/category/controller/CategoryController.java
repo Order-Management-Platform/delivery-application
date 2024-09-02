@@ -15,7 +15,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -57,9 +56,9 @@ public class CategoryController {
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{categoryId}")
     public ResponseEntity<ResponseDto> deleteCategory(@PathVariable("categoryId") UUID categoryId,
-                                                      @AuthenticationPrincipal UserDetails userDetails)
+                                                      @AuthenticationPrincipal UserDetailsImpl userDetails)
     {
-        categoryService.deleteCategory(categoryId, ((UserDetailsImpl) userDetails).getUserId());
+        categoryService.deleteCategory(categoryId, userDetails.getUserId());
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_CATEGORY_DELETE));
     }
 }

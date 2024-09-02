@@ -17,10 +17,15 @@ public class AiController {
 
     private final AiService aiService;
 
+    /**
+     * 음식점 상품 설명 생성
+     * @param name  상품 이름
+     */
     @PreAuthorize("hasRole('OWNER')")
     @PostMapping
-    public ResponseSingleDto getAiDescription(@RequestParam String name) throws JsonProcessingException {
+    public ResponseEntity getAiDescription(@RequestParam String name) throws JsonProcessingException {
         String data = aiService.getAiDescription(name);
-        return ResponseSingleDto.of(ResponseCode.SUCC_AI_GET, data);
+        ResponseSingleDto response= ResponseSingleDto.of(ResponseCode.SUCC_AI_GET, data);
+        return ResponseEntity.ok(response);
     }
 }
