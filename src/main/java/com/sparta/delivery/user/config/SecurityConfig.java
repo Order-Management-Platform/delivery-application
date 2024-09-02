@@ -7,7 +7,6 @@ import com.sparta.delivery.user.filter.JwtAuthorizationFilter;
 import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
 import com.sparta.delivery.user.service.AuthService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -58,20 +57,17 @@ public class SecurityConfig {
         http
 
                 .cors(cors->cors
-                        .configurationSource(new CorsConfigurationSource() {
-                            @Override
-                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-                                CorsConfiguration corsConfiguration = new CorsConfiguration();
-                                corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:8081"));
-                                corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
-                                corsConfiguration.setAllowCredentials(true);
-                                corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
-                                corsConfiguration.setMaxAge(3600L);
+                        .configurationSource(request -> {
+                            CorsConfiguration corsConfiguration = new CorsConfiguration();
+                            corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:8081"));
+                            corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+                            corsConfiguration.setAllowCredentials(true);
+                            corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+                            corsConfiguration.setMaxAge(3600L);
 
-                                corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
-                                return corsConfiguration;
+                            corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
+                            return corsConfiguration;
 
-                            }
                         }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)

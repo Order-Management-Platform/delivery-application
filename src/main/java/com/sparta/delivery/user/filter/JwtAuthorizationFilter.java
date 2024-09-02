@@ -72,11 +72,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 jwtUtil.errorMessageResponse(res, ResponseCode.NOT_FOUND_USER);
                 return;
             }
-        } else {
-            jwtUtil.errorMessageResponse(res, ResponseCode.NOT_PRESENT_JWT);
-            return;
         }
-
         filterChain.doFilter(req, res);
     }
 

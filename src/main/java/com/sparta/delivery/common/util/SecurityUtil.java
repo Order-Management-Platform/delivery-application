@@ -46,7 +46,7 @@ public class SecurityUtil {
         if (userRole.equals("ROLE_MANAGER") || userRole.equals("ROLE_MASTER"))
             return true;
         if ("delivery".equals(orderType) || "packaging".equals(orderType)) {
-            return "ROLE_CUSTOMER".equals(userRole);
+            return "ROLE_CUSTOMER".equals(userRole) || "ROLE_OWNER".equals(userRole) ;
         } else if ("internal".equals(orderType)) {
             return "ROLE_OWNER".equals(userRole);
         }
