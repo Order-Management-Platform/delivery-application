@@ -1,6 +1,8 @@
 package com.sparta.delivery.user.service;
 
+import com.sparta.delivery.user.entity.UserRole;
+
 public interface AuthService {
 
-    boolean isRoleMatch(String email, String role);
+    UserRole getRole(String email);
 }

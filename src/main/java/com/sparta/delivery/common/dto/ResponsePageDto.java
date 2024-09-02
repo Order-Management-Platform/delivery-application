@@ -15,7 +15,7 @@ public class ResponsePageDto<T> {
     private int status;
     private String message;
     private List<T> content;
-    private CustomPageable pageable;
+    private CustomPage pageInfo;
 
     // 삭제 예정
     public static <T> ResponsePageDto<T> of(final int status, final String message, final Page<T> page) {
@@ -23,7 +23,7 @@ public class ResponsePageDto<T> {
                 .status(status)
                 .message(message)
                 .content(page.getContent())
-                .pageable(CustomPageable.fromPage(
+                .pageInfo(CustomPage.fromPage(
                         page.getPageable(),
                         page.getTotalPages(),
                         page.getTotalElements()
@@ -36,7 +36,7 @@ public class ResponsePageDto<T> {
                 .status(resCode.getStatus())
                 .message(resCode.getMessage())
                 .content(page.getContent())
-                .pageable(CustomPageable.fromPage(
+                .pageInfo(CustomPage.fromPage(
                         page.getPageable(),
                         page.getTotalPages(),
                         page.getTotalElements()
@@ -46,14 +46,14 @@ public class ResponsePageDto<T> {
 
     @Getter
     @Builder
-    public static class CustomPageable {
+    public static class CustomPage {
         private int page;
         private int size;
         private long totalPage;
         private long totalCount;
 
-        public static CustomPageable fromPage(Pageable pageable, long totalPage, long totalElements) {
-            return CustomPageable.builder()
+        public static CustomPage fromPage(Pageable pageable, long totalPage, long totalElements) {
+            return CustomPage.builder()
                     .page(pageable.getPageNumber())
                     .size(pageable.getPageSize())
                     .totalPage(totalPage)

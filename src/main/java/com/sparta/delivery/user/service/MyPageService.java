@@ -3,6 +3,7 @@ package com.sparta.delivery.user.service;
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
+import com.sparta.delivery.user.dto.UserDetailInfoResponse;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.entity.User;
 import com.sparta.delivery.user.repository.UserRepository;
@@ -21,9 +22,9 @@ public class MyPageService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserInfoResponse myPageInfo(String email) {
+    public UserDetailInfoResponse myPageInfo(String email) {
         return userRepository.findByEmail(email)
-                .map(UserInfoResponse::of)
+                .map(UserDetailInfoResponse::of)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
     }
 
