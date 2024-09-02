@@ -31,7 +31,8 @@ public class Product extends BaseEntity {
     private Store store;
 
     private String name;
-    private int price;
+    @Builder.Default
+    private Integer price=100;
     private String description;
     @Builder.Default
     private Boolean soldOut = false;
