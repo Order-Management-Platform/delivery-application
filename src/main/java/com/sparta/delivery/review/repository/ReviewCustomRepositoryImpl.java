@@ -1,9 +1,10 @@
-package com.sparta.delivery.review;
+package com.sparta.delivery.review.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.sparta.delivery.review.entity.Review;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,7 +14,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.UUID;
 
-import static com.sparta.delivery.review.QReview.review;
+import static com.sparta.delivery.review.entity.QReview.review;
+
 
 @Repository
 @AllArgsConstructor
@@ -23,7 +25,7 @@ public class ReviewCustomRepositoryImpl implements ReviewCustomRepository {
 
 
     @Override
-    public Page<Review> findAllByStoreWithOwner(UUID storeId, String keyWord, String type, Pageable pageable) {
+    public Page<Review> findAllByConditionWithOwner(UUID storeId, String keyWord, String type, Pageable pageable) {
         List<Review> reviewList= jpaQueryFactory
                 .selectFrom(review)
                 .where(
@@ -48,7 +50,7 @@ public class ReviewCustomRepositoryImpl implements ReviewCustomRepository {
     }
 
     private BooleanExpression containsKey(String keyWord, String type) {
-        return type.equals("name") ? review.user.nickName.contains(keyWord)
+        return type.equals("nickName") ? review.user.nickName.contains(keyWord)
                 : review.content.contains(keyWord);
     }
 
