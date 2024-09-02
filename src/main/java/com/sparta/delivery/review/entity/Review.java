@@ -1,4 +1,4 @@
-package com.sparta.delivery.review;
+package com.sparta.delivery.review.entity;
 
 import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.review.dto.ReviewModifyRequestDto;
@@ -21,7 +21,6 @@ import java.util.UUID;
 @Getter
 @Builder
 @SQLRestriction("deleted_at IS NULL")
-@SQLDelete(sql="UPDATE review SET deleted_at =NOW() where id=?")
 public class Review extends BaseEntity {
 
     @Id
@@ -29,11 +28,11 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -46,7 +45,7 @@ public class Review extends BaseEntity {
     private String declarationMessage;
 
     public void modify(ReviewModifyRequestDto dto) {
-        this.content = dto.getConent();
+        this.content = dto.getContent();
         this.rating = dto.getRating();
     }
 }
