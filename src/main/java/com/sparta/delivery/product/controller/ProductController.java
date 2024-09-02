@@ -35,7 +35,7 @@ public class ProductController {
      * @param dto   상품 정보 dto
      * 리소스 접근 사용자와 음식점 생성자가 동일한지 검사합니다.
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @PostMapping("/{storeId}")
     public ResponseEntity createProduct(@PathVariable UUID storeId,@RequestBody ProductCreateRequestDto dto) {
         productService.createProduct(dto,storeId);
@@ -89,7 +89,7 @@ public class ProductController {
      * @param dto       상품 정보 dto
      * 리소스 접근 사용자와 상품의 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId))or hasRole('MANAGER')")
     @PutMapping("/{productId}")
     public ResponseEntity ModifyProduct(@PathVariable UUID productId,
                                             @RequestBody ProductModifyRequestDto dto) {
@@ -104,7 +104,7 @@ public class ProductController {
      * @param productId 상품 식별자
      * 리소스 접근 사용자와 상품의 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId))or hasRole('MANAGER')")
     @PatchMapping("/{productId}")
     public ResponseEntity switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
@@ -119,7 +119,7 @@ public class ProductController {
      * @param principal 사용자 정보를 담고 있는 객체
      * 리소스 접근 사용자와 상품의 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId))or hasRole('MANAGER')")
     @DeleteMapping("/{productId}")
     public ResponseEntity deleteProduct(@PathVariable UUID productId, Principal principal) {
         productService.deleteProduct(productId, principal);

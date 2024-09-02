@@ -69,7 +69,7 @@ public class ReviewController {
      * @param sort      정렬 기준
      * @param asc       정렬 방향
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId) ")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER') ")
     @GetMapping("/owner/{storeId}")
     public ResponseEntity getOwnerReviewList(@PathVariable UUID storeId,
                                               @RequestParam(required = false, defaultValue = "") String keyWord,
@@ -93,7 +93,7 @@ public class ReviewController {
      * @param dto       리뷰 수정 정보 dto
      * 리소스 접근 사용자와  리뷰 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.isReivewOwner(authentication,#reviewId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER') ")
     @PutMapping("/{reviewId}")
     public ResponseEntity ModifyReview(@PathVariable UUID reviewId,
                                     @RequestBody ReviewModifyRequestDto dto) {
@@ -108,7 +108,7 @@ public class ReviewController {
      * @param reviewId  리뷰 식별자
      * 리소스 접근 사용자와  리뷰 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.isReivewOwner(authentication,#reviewId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER') ")
     @DeleteMapping("/{reviewId}")
     public ResponseEntity deleteReview(@PathVariable UUID reviewId) {
         reviewService.deleteReview(reviewId);
