@@ -1,10 +1,12 @@
-package com.sparta.delivery.review;
+package com.sparta.delivery.review.service;
 
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.review.entity.Review;
 import com.sparta.delivery.review.dto.ReviewCreateRequestDto;
 import com.sparta.delivery.review.dto.ReviewListResponseDto;
 import com.sparta.delivery.review.dto.ReviewModifyRequestDto;
+import com.sparta.delivery.review.repository.ReviewRepository;
 import com.sparta.delivery.store.entity.Store;
 import com.sparta.delivery.store.repository.StoreRepository;
 import com.sparta.delivery.user.entity.User;
@@ -28,32 +30,35 @@ public class ReviewService {
 
 
     //리뷰 생성
+    @Transactional
     public void createReview(ReviewCreateRequestDto dto, Principal principal) {
         Store store = storeRepository.findById(dto.getStoreId())
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
-
+        //사용자 리뷰 생성
         Review review = Review.builder()
                 .store(store)
                 .user(user)
                 .content(dto.getContent())
                 .rating(dto.getRating())
                 .build();
-
         reviewRepository.save(review);
+
+        //음식점의 평점 계산 후 반영
+        store.ratingCalculation(dto.getRating());
+        storeRepository.save(store);
     }
 
-
-    //사장님 리뷰 목록 조회
+    //리뷰 사장님 목록 조회
     public Page<ReviewListResponseDto> getOwnerReviewList(UUID storeId, String keyWord, String type, Pageable pageable) {
-        //type - name content 에대한 검색어로 조회
-        //ype=name일 경우, content일 경우
-        Page<Review> reviewList = reviewRepository.findAllByStoreWithOwner(storeId, keyWord, type, pageable);
+        Page<Review> reviewList = reviewRepository.findAllByConditionWithOwner(storeId, keyWord, type, pageable);
         return reviewList.map(ReviewListResponseDto::of);
 
     }
-    //사용자 리뷰 목록 조회
+
+    //리뷰 사용자 목록 조회
+    @Transactional
     public Page<ReviewListResponseDto> getReviewList(UUID storeId,Pageable pageable) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
@@ -61,8 +66,10 @@ public class ReviewService {
         return review.map(ReviewListResponseDto::of);
     }
 
-    //entity에 서비스 로직이 들어가는게 맞을까
-    public void modifyProduct(UUID reviewId, ReviewModifyRequestDto dto) {
+    // 리뷰 수정
+    //todo : entity에 서비스 로직이 들어가는게 맞을까
+    @Transactional
+    public void modifyreview(UUID reviewId, ReviewModifyRequestDto dto) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
         review.modify(dto);
@@ -70,14 +77,16 @@ public class ReviewService {
 
     }
 
-    public void deleteProduct(UUID reviewId) {
+    //리뷰 삭제
+    @Transactional
+    public void deleteReview(UUID reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
-        reviewRepository.delete(review);
-
+        review.markDeleted(reviewId);
+        reviewRepository.save(review);
     }
 
-    //repository 메소드명 다시 생각
+    //리뷰 신고
     @Transactional
     public void ReportReview(UUID reviewId, String content) {
         Review review = reviewRepository.findById(reviewId)
