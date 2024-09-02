@@ -4,6 +4,7 @@ import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
+import com.sparta.delivery.user.dto.UserDetailInfoResponse;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import com.sparta.delivery.user.service.MyPageService;
@@ -26,9 +27,9 @@ public class MyPageController {
 
 
     @GetMapping
-    public ResponseEntity<ResponseSingleDto<UserInfoResponse>> myPagInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<ResponseSingleDto<UserDetailInfoResponse>> myPagInfo(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         String email = userDetails.getUsername();
-        UserInfoResponse userIngoResponse = myPageService.myPageInfo(email);
+        UserDetailInfoResponse userIngoResponse = myPageService.myPageInfo(email);
         return ResponseEntity.ok(ResponseSingleDto.of(ResponseCode.SUCC_USER_GET, userIngoResponse));
     }
 

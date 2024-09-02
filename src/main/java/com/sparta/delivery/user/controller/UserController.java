@@ -6,6 +6,7 @@ import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
+import com.sparta.delivery.user.dto.UserDetailInfoResponse;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +51,8 @@ public class UserController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseSingleDto<UserInfoResponse>> getUserInfo(@PathVariable("userId") UUID userId) {
-        UserInfoResponse userResponse = userService.getUserInfo(userId);
+    public ResponseEntity<ResponseSingleDto<UserDetailInfoResponse>> getUserInfo(@PathVariable("userId") UUID userId) {
+        UserDetailInfoResponse userResponse = userService.getUserInfo(userId);
         return ResponseEntity.ok(ResponseSingleDto.of(ResponseCode.SUCC_USER_GET, userResponse));
     }
 

@@ -1,7 +1,9 @@
 package com.sparta.delivery.user.service;
 
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
+import com.sparta.delivery.user.dto.UserDetailInfoResponse;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.entity.User;
 import com.sparta.delivery.user.entity.UserRole;
@@ -96,7 +98,7 @@ class UserServiceTest {
     @Test
     @DisplayName("회원 조회")
     void getUserInfo() {
-        UserInfoResponse userInfo = userService.getUserInfo(user.getId());
+        UserDetailInfoResponse userInfo = userService.getUserInfo(user.getId());
 
         assertNotNull(userInfo);
         assertEquals(userInfo.getUserId(),user.getId());
@@ -114,7 +116,7 @@ class UserServiceTest {
         userService.updateUser(userId, updateUserRequest);
 
         //then
-        UserInfoResponse userInfo = userService.getUserInfo(user.getId());
+        UserDetailInfoResponse userInfo = userService.getUserInfo(user.getId());
         assertThat(userInfo.getRole()).isEqualTo(updateUserRequest.getRole());
         assertThat(userInfo.getPhone()).isEqualTo(updateUserRequest.getPhone());
     }
@@ -131,8 +133,8 @@ class UserServiceTest {
         em.clear();
         //then
 
-        assertThrows(IllegalArgumentException.class, ()->{
-            UserInfoResponse userInfo = userService.getUserInfo(userId);
+        assertThrows(BusinessException.class, ()->{
+            UserDetailInfoResponse userInfo = userService.getUserInfo(userId);
         });
 
     }

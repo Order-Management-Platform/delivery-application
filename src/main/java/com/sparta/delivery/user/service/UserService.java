@@ -4,6 +4,7 @@ import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateUserRequest;
+import com.sparta.delivery.user.dto.UserDetailInfoResponse;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.entity.User;
 import com.sparta.delivery.user.repository.UserRepository;
@@ -43,9 +44,9 @@ public class UserService {
         return userRepository.findAll(pageable).map(UserInfoResponse::of);
     }
 
-    public UserInfoResponse getUserInfo(UUID userId) {
+    public UserDetailInfoResponse getUserInfo(UUID userId) {
         return userRepository.findById(userId)
-                .map(UserInfoResponse::of)
+                .map(UserDetailInfoResponse::of)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
     }
 
