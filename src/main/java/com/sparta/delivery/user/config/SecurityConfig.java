@@ -7,6 +7,7 @@ import com.sparta.delivery.user.filter.JwtAuthorizationFilter;
 import com.sparta.delivery.user.jwt.JwtUtil;
 import com.sparta.delivery.user.jwt.UserDetailsServiceImpl;
 import com.sparta.delivery.user.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -27,7 +28,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import java.util.Collections;
 
 @EnableWebSecurity
 @Configuration
@@ -51,6 +56,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+
+                .cors(cors->cors
+                        .configurationSource(new CorsConfigurationSource() {
+                            @Override
+                            public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+                                CorsConfiguration corsConfiguration = new CorsConfiguration();
+                                corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:8081"));
+                                corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+                                corsConfiguration.setAllowCredentials(true);
+                                corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+                                corsConfiguration.setMaxAge(3600L);
+
+                                corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
+                                return corsConfiguration;
+
+                            }
+                        }))
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -60,6 +82,7 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers("/user/signUp").permitAll()
                                 .requestMatchers("/user/signIn").permitAll()
+                                .requestMatchers("/").permitAll()
                 // 여기서 권한 별 접속 가능 여부 설정
                                 .anyRequest().authenticated() //
 
