@@ -49,7 +49,7 @@ public class ProductService {
 
     //가게 내 상품 조회
     public  Page<ProductListResponseDto> getStoreProductList(UUID storeId,String keyWord, Pageable pageable) {
-        productRepository.findById(storeId)
+        storeRepository.findById(storeId)
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
         Page<Product> product = productRepository.findAllByStoreIdAndNameContaining(storeId,keyWord, pageable);
         return product.map(ProductListResponseDto::of);
