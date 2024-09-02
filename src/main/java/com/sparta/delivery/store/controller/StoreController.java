@@ -75,7 +75,7 @@ public class StoreController {
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/ownerList")
     public ResponseEntity<ResponseSingleDto> getStoreOwnerList(Principal principal){
-        List<Store> data=storeService.getOwnerStoreList(principal);
+        List<StoreListResponseDto> data=storeService.getOwnerStoreList(principal);
 
         ResponseSingleDto response=ResponseSingleDto.of(ResponseCode.SUCC_STORE_OWNER_LIST_GET, data);
         return ResponseEntity.ok(response);
