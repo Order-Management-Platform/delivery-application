@@ -47,8 +47,8 @@ git clone https://github.com/Order-Management-Platform/delivery-application.git
 - 실행
     - IDE를 이용하여 실행
     - 또는 CLI 사용 시
-    ```markdown
-    ./gradlew bootRun -Profile=dev
+    ```bash
+    ./gradlew bootRun -Pprofile=dev
     ```
 
 ## 프로젝트 목적/상세
