@@ -20,7 +20,7 @@ import java.util.UUID;
 @Table(name = "p_review")
 @Getter
 @Builder
-@SQLRestriction("deleted_at IS NULL")
+@SQLRestriction("deleted_at IS NULL and declaration = false")
 public class Review extends BaseEntity {
 
     @Id

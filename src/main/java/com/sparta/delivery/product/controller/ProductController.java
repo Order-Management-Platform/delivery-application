@@ -109,7 +109,7 @@ public class ProductController {
     public ResponseEntity switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
 
-        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_PRODUCT_MODIFY);
+        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_PRODUCT_SWITCH_STATUS);
         return ResponseEntity.ok(response);
     }
 

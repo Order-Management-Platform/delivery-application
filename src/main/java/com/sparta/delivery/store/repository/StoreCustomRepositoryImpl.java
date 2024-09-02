@@ -23,7 +23,6 @@ public class StoreCustomRepositoryImpl implements StoreCustomRepository {
 
     @Override
     public Page<Store> findAllByCondition(UUID regionId, UUID categoryId, String keyWord, Pageable pageable) {
-        // Create the base query for fetching data
         JPQLQuery<Store> query = jpaQueryFactory
                 .selectFrom(store)
                 .where(store.region.id.eq(regionId));

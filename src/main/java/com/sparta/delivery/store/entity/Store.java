@@ -4,6 +4,7 @@ import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.common.BaseEntity;
 import com.sparta.delivery.product.entity.Product;
 import com.sparta.delivery.region.entity.Region;
+import com.sparta.delivery.store.dto.StoreModifyRequestDto;
 import com.sparta.delivery.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -69,4 +70,16 @@ public class Store extends BaseEntity {
         this.review_count++;
         this.rating = total_rating / review_count;
     }
+
+    public void modify(StoreModifyRequestDto dto, Category category, Region region) {
+        this.name = dto.getName();
+        this.description = dto.getDescription();
+        this.tel = dto.getTel();
+        this.minPrice = dto.getMinPrice();
+        this.address = dto.getAddress();
+        this.operatingTime = dto.getOperatingTime();
+        this.category = category;
+        this.region = region;
+    }
+
 }
