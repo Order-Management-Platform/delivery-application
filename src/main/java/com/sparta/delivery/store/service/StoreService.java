@@ -3,6 +3,7 @@ package com.sparta.delivery.store.service;
 import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.category.repository.CategoryRepository;
 import com.sparta.delivery.common.ResponseCode;
+import com.sparta.delivery.common.dto.ResponseSingleDto;
 import com.sparta.delivery.common.exception.NotFoundException;
 import com.sparta.delivery.region.entity.Region;
 import com.sparta.delivery.region.repository.RegionRepository;
@@ -34,9 +35,10 @@ public class StoreService {
     private final RegionRepository regionRepository;
 
 
+    //음식점 생성
     public void createStore(UUID userId, Map<String,String> map) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_USER));
 
         Store store = Store.builder()
                 .name(map.get("name"))
@@ -45,20 +47,13 @@ public class StoreService {
         storeRepository.save(store);
     }
 
-    //todo : query dsl로 변경
+    // 음식점 사용자 조회
     public Page<StoreListResponseDto> getStoreList(UUID categoryId, UUID regionId, String keyWord, Pageable pageable) {
-        Page<Store> storeList= categoryId == null
-                ? storeRepository.findAllByRegionIdAndNameContaining(regionId,keyWord,pageable) :
-                storeRepository.findAllByCategoryIdAndRegionIdAndNameContaining(categoryId,regionId,keyWord,pageable);
+        Page<Store> storeList = storeRepository.findAllByCondition(categoryId,regionId,keyWord,pageable);
         return storeList.map(StoreListResponseDto::of);
     }
 
-    public StoreGetResponseDto getStore(UUID storeId) {
-        Store store = storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE.getMessage()));
-        return StoreGetResponseDto.of(store);
-    }
-
+    //음식점 사장님 조회
     @Transactional
     public List<Store> getOwnerStoreList(Principal principal) {
         String email = principal.getName();
@@ -67,14 +62,22 @@ public class StoreService {
         return storeRepository.findAllByUser(user);
     }
 
+    //음식점 상세 조회
+    public StoreGetResponseDto getStore(UUID storeId) {
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+        return StoreGetResponseDto.of(store);
+    }
+
+    //음식점 수정
     //todo : 생성자 구조 제네릭으로 수정
     public void modifyStore(UUID storeId, StoreModifyRequestDto dto) {
         storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE.getMessage()));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(()->new NotFoundException("카테고리를 찾을 수 없습니다."));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         Region region = regionRepository.findById(dto.getRegionId())
-                .orElseThrow(()->new NotFoundException("지역을 찾을 수 없습니다. "));
+                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
 
         Store ModifyStore=Store.builder()
                 .name(dto.getName())
@@ -89,10 +92,13 @@ public class StoreService {
         storeRepository.save(ModifyStore);
     }
 
-    public void deleteStore(UUID storeId) {
+    //음식점 삭제
+    public void deleteStore(UUID storeId,Principal principal) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE.getMessage()));
-        storeRepository.delete(store);
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+        User user = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+        store.markDeleted(user.getId());
     }
 
 }
