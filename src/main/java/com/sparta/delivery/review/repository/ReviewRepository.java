@@ -21,8 +21,5 @@ public interface ReviewRepository extends JpaRepository<Review, UUID>, ReviewCus
 
     Page<Review> findAllByStore(Store store, Pageable pageable);
 
-    @Modifying
-    @Query("UPDATE Review r SET r.content = :content, r.declaration = true WHERE r.id = :id")
-    void modifyDeclaration(@Param("id") UUID id, @Param("content") String content);
 
 }

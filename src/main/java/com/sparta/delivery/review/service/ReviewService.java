@@ -82,8 +82,7 @@ public class ReviewService {
     public void deleteReview(UUID reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
-        review.markDeleted(reviewId);
-        reviewRepository.save(review);
+        review.delete();
     }
 
     //리뷰 신고
@@ -91,6 +90,7 @@ public class ReviewService {
     public void ReportReview(UUID reviewId, String content) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
-        reviewRepository.modifyDeclaration(review.getId(), content);
+
+        review.declaration(content);
     }
 }
