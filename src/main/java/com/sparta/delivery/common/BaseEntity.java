@@ -1,5 +1,6 @@
 package com.sparta.delivery.common;
 
+import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -9,6 +10,8 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -40,9 +43,10 @@ public class BaseEntity {
     @Column(nullable = true, length = 45)
     private UUID deletedBy;
 
-    public void markDeleted(UUID userId) {
+    public void delete() {
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        this.deletedBy = userDetails.getUserId();
         this.deletedAt = LocalDateTime.now();
-        this.deletedBy = userId;
     }
 
 }
