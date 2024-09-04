@@ -14,6 +14,7 @@ import java.util.UUID;
 @Builder
 public class ProductListResponseDto {
 
+    private UUID productId;
     private UUID storeId;
     private String name;
     private int price;
@@ -22,6 +23,7 @@ public class ProductListResponseDto {
 
     public static ProductListResponseDto of(Product product) {
         return ProductListResponseDto.builder()
+                .productId(product.getId())
                 .storeId(product.getStore().getId())
                 .name(product.getName())
                 .price(product.getPrice())
