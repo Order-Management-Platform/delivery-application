@@ -13,7 +13,7 @@ import java.util.UUID;
 public class StoreListResponseDto {
     private UUID storeId;
     private String name;
-    private int minPrice;
+    private Integer minPrice;
     private String tel;
     private String description;
     private String operatingTime;
