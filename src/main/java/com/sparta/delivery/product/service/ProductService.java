@@ -49,7 +49,7 @@ public class ProductService {
 
     //가게 내 상품 조회
     public  Page<ProductListResponseDto> getStoreProductList(UUID storeId,String keyWord, Pageable pageable) {
-        productRepository.findById(storeId)
+        storeRepository.findById(storeId)
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
         Page<Product> product = productRepository.findAllByStoreIdAndNameContaining(storeId,keyWord, pageable);
         return product.map(ProductListResponseDto::of);
@@ -81,12 +81,10 @@ public class ProductService {
 
     //상품 삭제
     @Transactional
-    public void deleteProduct(UUID productId, Principal principal) {
+    public void deleteProduct(UUID productId) {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
-        User user=userRepository.findByEmail(principal.getName())
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_USER));
-        product.markDeleted(user.getId());
+        product.delete();
     }
 
 }
