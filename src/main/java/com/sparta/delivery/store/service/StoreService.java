@@ -24,6 +24,7 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -49,17 +50,19 @@ public class StoreService {
 
     // 음식점 사용자 조회
     public Page<StoreListResponseDto> getStoreList(UUID categoryId, UUID regionId, String keyWord, Pageable pageable) {
-        Page<Store> storeList = storeRepository.findAllByCondition(categoryId,regionId,keyWord,pageable);
+        Page<Store> storeList = storeRepository.findAllByCondition(regionId,categoryId,keyWord,pageable);
         return storeList.map(StoreListResponseDto::of);
     }
 
     //음식점 사장님 조회
     @Transactional
-    public List<Store> getOwnerStoreList(Principal principal) {
+    public List<StoreListResponseDto> getOwnerStoreList(Principal principal) {
         String email = principal.getName();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new NotFoundException("사용자를 찾을 수 없습니다."));
-        return storeRepository.findAllByUser(user);
+        List<Store> storelist=storeRepository.findAllByUser(user);
+        return storelist.stream().map(StoreListResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     //음식점 상세 조회
@@ -71,34 +74,24 @@ public class StoreService {
 
     //음식점 수정
     //todo : 생성자 구조 제네릭으로 수정
+    @Transactional
     public void modifyStore(UUID storeId, StoreModifyRequestDto dto) {
-        storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
         Category category = categoryRepository.findById(dto.getCategoryId())
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
         Region region = regionRepository.findById(dto.getRegionId())
                 .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
 
-        Store ModifyStore=Store.builder()
-                .name(dto.getName())
-                .description(dto.getDescription())
-                .tel(dto.getTel())
-                .minPrice(dto.getMinPrice())
-                .address(dto.getAddress())
-                .operatingTime(dto.getOperatingTime())
-                .category(category)
-                .region(region)
-                .build();
-        storeRepository.save(ModifyStore);
+        store.modify(dto, category, region);
+//        storeRepository.save(store);
     }
 
     //음식점 삭제
-    public void deleteStore(UUID storeId,Principal principal) {
+    public void deleteStore(UUID storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
-        User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
-        store.markDeleted(user.getId());
+        store.delete();
     }
 
 }

@@ -58,7 +58,7 @@ public class StoreController {
                                                         @RequestParam(required = false, defaultValue = "false") boolean asc,
                                                         @RequestParam(required = false, defaultValue = "name") String sort,
                                                         @RequestParam(required = false,defaultValue="") UUID categoryId,
-                                                        @RequestParam(required=true) UUID regionId
+                                                        @RequestParam(required= false) UUID regionId
     ) {
         Pageable pageable = asc ? PageRequest.of(page-1, size, Sort.by(sort).ascending()) :
                 PageRequest.of(page-1, size, Sort.by(sort).descending());
@@ -75,7 +75,7 @@ public class StoreController {
     @PreAuthorize("hasRole('OWNER')")
     @GetMapping("/ownerList")
     public ResponseEntity<ResponseSingleDto> getStoreOwnerList(Principal principal){
-        List<Store> data=storeService.getOwnerStoreList(principal);
+        List<StoreListResponseDto> data=storeService.getOwnerStoreList(principal);
 
         ResponseSingleDto response=ResponseSingleDto.of(ResponseCode.SUCC_STORE_OWNER_LIST_GET, data);
         return ResponseEntity.ok(response);
@@ -99,7 +99,7 @@ public class StoreController {
      * @param dto       음식점 정보 dto
      * 리소스 접근 사용자와 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @PutMapping("/{storeId}")
     public ResponseEntity<ResponseDto> ModifyStore(@PathVariable UUID storeId, @RequestBody StoreModifyRequestDto dto) {
         storeService.modifyStore(storeId, dto);
@@ -111,14 +111,12 @@ public class StoreController {
     /**
      * 음식점 삭제
      * @param storeId     음식점 식별자
-     * @param principal   사용자 정보를 담고 있는 객체
      * 리소스 접근 사용자와 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @DeleteMapping("/{storeId}")
-    public ResponseEntity<ResponseDto> deleteStore(@PathVariable UUID storeId, Principal principal) {
-        storeService.deleteStore(storeId, principal);
-
+    public ResponseEntity<ResponseDto> deleteStore(@PathVariable UUID storeId) {
+        storeService.deleteStore(storeId);
         ResponseDto response = ResponseDto.of(ResponseCode.SUCC_STORE_DELETE);
         return ResponseEntity.ok(response);
     }
