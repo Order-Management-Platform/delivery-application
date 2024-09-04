@@ -9,7 +9,6 @@ import com.sparta.delivery.product.dto.ProductListResponseDto;
 import com.sparta.delivery.product.dto.ProductModifyRequestDto;
 import com.sparta.delivery.product.dto.ProductResponseDto;
 import com.sparta.delivery.product.service.ProductService;
-import com.sparta.delivery.store.dto.StoreGetResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.UUID;
 
 @RestController
@@ -35,13 +33,11 @@ public class ProductController {
      * @param dto   상품 정보 dto
      * 리소스 접근 사용자와 음식점 생성자가 동일한지 검사합니다.
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @PostMapping("/{storeId}")
-    public ResponseEntity createProduct(@PathVariable UUID storeId,@RequestBody ProductCreateRequestDto dto) {
+    public ResponseEntity<ResponseDto> createProduct(@PathVariable UUID storeId,@RequestBody ProductCreateRequestDto dto) {
         productService.createProduct(dto,storeId);
-
-        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_PRODUCT_CREATE);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PRODUCT_CREATE));
     }
 
     /**
@@ -55,7 +51,7 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/store/{storeId}")
-    public ResponseEntity getStoreProductList(@PathVariable UUID storeId,
+    public ResponseEntity<ResponsePageDto<ProductListResponseDto>> getStoreProductList(@PathVariable UUID storeId,
                                                             @RequestParam(required = false,defaultValue="") String keyWord,
                                                             @RequestParam(required = false, defaultValue = "1") int page,
                                                             @RequestParam(required = false, defaultValue = "10") int size,
@@ -66,8 +62,7 @@ public class ProductController {
                 PageRequest.of(page-1, size, Sort.by(sort).descending());
         Page<ProductListResponseDto> data = productService.getStoreProductList(storeId, keyWord, pageable);
 
-        ResponsePageDto<ProductListResponseDto> response = ResponsePageDto.of(ResponseCode.SUCC_PRODUCT_LIST_GET, data);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ResponsePageDto.of(ResponseCode.SUCC_PRODUCT_LIST_GET, data));
     }
 
     /**
@@ -76,11 +71,9 @@ public class ProductController {
      */
     @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/{productId}")
-    public ResponseEntity getProduct(@PathVariable UUID productId) {
+    public ResponseEntity<ResponseSingleDto<ProductResponseDto>> getProduct(@PathVariable UUID productId) {
         ProductResponseDto data=productService.getProduct(productId);
-
-        ResponseSingleDto<ProductResponseDto> response = ResponseSingleDto.of(ResponseCode.SUCC_PRODUCT_GET, data);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ResponseSingleDto.of(ResponseCode.SUCC_PRODUCT_GET, data));
     }
 
     /**
@@ -89,9 +82,9 @@ public class ProductController {
      * @param dto       상품 정보 dto
      * 리소스 접근 사용자와 상품의 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @PutMapping("/{productId}")
-    public ResponseEntity ModifyProduct(@PathVariable UUID productId,
+    public ResponseEntity<ResponseDto> ModifyProduct(@PathVariable UUID productId,
                                             @RequestBody ProductModifyRequestDto dto) {
         productService.modifyProduct(productId, dto);
 
@@ -104,27 +97,22 @@ public class ProductController {
      * @param productId 상품 식별자
      * 리소스 접근 사용자와 상품의 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @PatchMapping("/{productId}")
-    public ResponseEntity switchProductStatus(@PathVariable UUID productId) {
+    public ResponseEntity<ResponseDto> switchProductStatus(@PathVariable UUID productId) {
         productService.modifyProductStatus(productId);
-
-        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_PRODUCT_MODIFY);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PRODUCT_MODIFY));
     }
 
     /**
      * 상품 삭제
      * @param productId 상품 식별자
-     * @param principal 사용자 정보를 담고 있는 객체
      * 리소스 접근 사용자와 상품의 음식점 생성자가 동일한지 검사
      */
-    @PreAuthorize("hasRole('OWNER') and @securityUtil.isProductOwner(authentication,#productId)")
+    @PreAuthorize("(hasRole('OWNER') and @securityUtil.isStoreOwner(authentication,#storeId)) or hasRole('MANAGER')")
     @DeleteMapping("/{productId}")
-    public ResponseEntity deleteProduct(@PathVariable UUID productId, Principal principal) {
-        productService.deleteProduct(productId, principal);
-
-        ResponseDto response = ResponseDto.of(ResponseCode.SUCC_PRODUCT_DELETE);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseDto> deleteProduct(@PathVariable UUID productId) {
+        productService.deleteProduct(productId);
+        return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PRODUCT_DELETE));
     }
 }
