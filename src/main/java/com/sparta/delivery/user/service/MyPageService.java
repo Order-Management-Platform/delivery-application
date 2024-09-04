@@ -44,6 +44,6 @@ public class MyPageService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
-        user.delete(userId);
+        user.delete();
     }
 }

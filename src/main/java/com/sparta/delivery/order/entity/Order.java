@@ -86,8 +86,8 @@ public class Order extends BaseEntity {
     }
 
     // 주문 취소 메서드
-    public void cancel(UUID orderId) {
-        this.markDeleted(orderId);
+    public void cancel() {
+        this.delete();
     }
 
     //결제 엔티티 추가 메서드

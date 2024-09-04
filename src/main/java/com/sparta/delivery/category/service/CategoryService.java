@@ -50,10 +50,10 @@ public class CategoryService {
 
 
     @Transactional
-    public void deleteCategory(UUID categoryId, UUID userId) {
+    public void deleteCategory(UUID categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_CATEGORY));
-        category.delete(userId);
-        category.markDeleted(userId);
+
+        category.delete();
     }
 }

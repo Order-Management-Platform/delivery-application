@@ -61,10 +61,6 @@ public class User extends BaseEntity {
     }
 
 
-    public void delete(UUID userId) {
-        this.markDeleted(userId);
-    }
-
     public void updateMyPage(UpdateMyPageRequest updateMyPageRequest) {
         this.nickName = updateMyPageRequest.getNickName();
         this.password = updateMyPageRequest.getPassword();

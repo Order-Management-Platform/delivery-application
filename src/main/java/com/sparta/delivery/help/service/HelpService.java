@@ -84,10 +84,10 @@ public class HelpService {
 
     // 문의 삭제 로직
     @Transactional
-    public ResponseDto deleteHelp(UUID helpId, UUID userId) {
+    public ResponseDto deleteHelp(UUID helpId) {
         Help help = helpRepository.findById(helpId).orElseThrow(() ->
                 new NotFoundException(ResponseCode.NOT_FOUND_HELP));
-        help.markDeleted(userId);
+        help.delete();
         return ResponseDto.of(ResponseCode.SUCC_HELP_DELETE);
     }
 

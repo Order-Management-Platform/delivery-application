@@ -60,11 +60,11 @@ public class NoticeService {
     }
 
     @Transactional
-    public void deleteNotice(UUID noticeId, UUID userId) {
+    public void deleteNotice(UUID noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_NOTICE));
 
-        notice.delete(userId);
+        notice.delete();
     }
 
 

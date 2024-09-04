@@ -96,11 +96,10 @@ class CategoryServiceTest {
     @DisplayName("카테고리를 정상적으로 삭제하는지 검증")
     void deleteCategory_ShouldMarkCategoryAsDeleted() {
         UUID categoryId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
         Category category = new Category("Category to Delete");
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.of(category));
 
-        categoryService.deleteCategory(categoryId, userId);
+        categoryService.deleteCategory(categoryId);
 
 
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
@@ -117,7 +116,7 @@ class CategoryServiceTest {
         when(categoryRepository.findById(categoryId)).thenReturn(Optional.empty());
 
         BusinessException exception = assertThrows(BusinessException.class, () ->
-                categoryService.deleteCategory(categoryId, userId));
+                categoryService.deleteCategory(categoryId));
 
         assertThat(exception.getResponseCode()).isEqualTo(ResponseCode.NOT_FOUND_CATEGORY);
         verify(categoryRepository, times(1)).findById(categoryId);

@@ -4,6 +4,7 @@ import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.user.dto.SignUpRequest;
 import com.sparta.delivery.user.dto.UpdateMyPageRequest;
+import com.sparta.delivery.user.dto.UserDetailInfoResponse;
 import com.sparta.delivery.user.dto.UserInfoResponse;
 import com.sparta.delivery.user.entity.User;
 import com.sparta.delivery.user.entity.UserRole;
@@ -69,7 +70,7 @@ class MyPageServiceTest {
         String email = user.getEmail();
 
         //when
-        UserInfoResponse userInfoResponse = myPageService.myPageInfo(email);
+        UserDetailInfoResponse userInfoResponse = myPageService.myPageInfo(email);
 
         //then
         assertThat(userInfoResponse).isNotNull();

@@ -72,10 +72,8 @@ public class PaymentController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{paymentId}")
-    public ResponseEntity<ResponseDto> deletePayment(@PathVariable("paymentId") UUID paymentId,
-                                                     @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        UUID userId = userDetails.getUserId();
-        paymentService.deletePayment(paymentId, userId);
+    public ResponseEntity<ResponseDto> deletePayment(@PathVariable("paymentId") UUID paymentId) {
+        paymentService.deletePayment(paymentId);
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_PAYMENT_DELETE));
     }
 

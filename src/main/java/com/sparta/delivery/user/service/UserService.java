@@ -73,7 +73,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
-        user.delete(userId);
+        user.delete();
     }
 
 

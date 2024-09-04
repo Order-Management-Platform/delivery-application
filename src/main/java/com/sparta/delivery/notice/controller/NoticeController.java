@@ -71,11 +71,9 @@ public class NoticeController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity<ResponseDto> deleteNotice(@PathVariable("noticeId") UUID noticeId,
-                                                    @AuthenticationPrincipal UserDetailsImpl userDetails)
+    public ResponseEntity<ResponseDto> deleteNotice(@PathVariable("noticeId") UUID noticeId)
     {
-        UUID userId = userDetails.getUserId();
-        noticeService.deleteNotice(noticeId,userId);
+        noticeService.deleteNotice(noticeId);
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_NOTICE_DELETE));
     }
 }

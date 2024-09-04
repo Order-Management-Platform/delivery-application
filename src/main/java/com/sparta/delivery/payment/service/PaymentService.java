@@ -69,10 +69,10 @@ public class PaymentService {
 
 
     @Transactional
-    public void deletePayment(UUID paymentId, UUID userId) {
+    public void deletePayment(UUID paymentId) {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_PAYMENT));
-        payment.delete(userId);
+        payment.delete();
     }
 
     private boolean isMatchStore(User user, Order order) {

@@ -48,4 +48,9 @@ public class Review extends BaseEntity {
         this.content = dto.getContent();
         this.rating = dto.getRating();
     }
+
+    public void declaration(String content) {
+        this.content = content;
+        this.declaration = true;
+    }
 }

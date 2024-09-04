@@ -9,7 +9,9 @@ import com.sparta.delivery.notice.dto.UpdateNoticeRequest;
 import com.sparta.delivery.notice.entity.Notice;
 import com.sparta.delivery.notice.entity.NoticeAccess;
 import com.sparta.delivery.notice.repository.NoticeRepository;
+import com.sparta.delivery.user.entity.User;
 import com.sparta.delivery.user.entity.UserRole;
+import com.sparta.delivery.user.jwt.UserDetailsImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +22,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -140,15 +146,34 @@ class NoticeServiceTest {
     void deleteNotice_ShouldDeleteNotice() {
         UUID noticeId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
+        User user = User.builder().id(userId).build();
+        UserDetailsImpl userDetails = new UserDetailsImpl(user); // 필요한 필드 설정
+
+        // Mock Authentication 및 SecurityContext
+        Authentication authentication = mock(Authentication.class);
+        when(authentication.getPrincipal()).thenReturn(userDetails);
+
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+
+        SecurityContextHolder.setContext(securityContext); // 모킹된 SecurityContext 설정
+
+        // Notice 생성 및 저장 모킹
         Notice notice = Notice.of(new CreateNoticeRequest("Title", "Content", NoticeAccess.CUSTOMER));
         when(noticeRepository.findById(noticeId)).thenReturn(Optional.of(notice));
 
-        noticeService.deleteNotice(noticeId, userId);
+        // 실제 삭제 메서드 호출 (JWT 인증된 사용자 ID가 설정되어 있어야 함)
+        noticeService.deleteNotice(noticeId);
 
+        // 삭제 후 findById 호출 시 empty 반환되도록 모킹
         when(noticeRepository.findById(noticeId)).thenReturn(Optional.empty());
 
+        // 삭제된 공지사항 검증
         Optional<Notice> foundNotice = noticeRepository.findById(noticeId);
         assertThat(foundNotice).isEmpty();
+
+        // SecurityContextHolder 초기화
+        SecurityContextHolder.clearContext();
 
     }
 
@@ -160,7 +185,7 @@ class NoticeServiceTest {
         when(noticeRepository.findById(noticeId)).thenReturn(Optional.empty());
 
         BusinessException exception = assertThrows(BusinessException.class, () ->
-                noticeService.deleteNotice(noticeId, userId));
+                noticeService.deleteNotice(noticeId));
 
         assertThat(exception.getResponseCode()).isEqualTo(ResponseCode.NOT_FOUND_NOTICE);
     }

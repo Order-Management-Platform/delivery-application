@@ -34,7 +34,4 @@ public class Region extends BaseEntity {
         this.name = requestDto.getName();
     }
 
-    public void delete(UUID regionId) {
-        this.markDeleted(regionId);
-    }
 }

@@ -69,11 +69,7 @@ public class HelpController {
     // 문의 삭제
     @DeleteMapping("/{helpId}")
     @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.checkHelpUser(#helpId, authentication)")
-    public ResponseEntity<ResponseDto> deleteHelp(
-            @PathVariable(name = "helpId") UUID helpId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        return ResponseEntity.ok(helpService.deleteHelp(helpId, userDetails.getUserId()));
-
+    public ResponseEntity<ResponseDto> deleteHelp(@PathVariable(name = "helpId") UUID helpId) {
+        return ResponseEntity.ok(helpService.deleteHelp(helpId));
     }
 }

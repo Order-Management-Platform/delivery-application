@@ -55,10 +55,9 @@ public class CategoryController {
 
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable("categoryId") UUID categoryId,
-                                                      @AuthenticationPrincipal UserDetailsImpl userDetails)
+    public ResponseEntity<ResponseDto> deleteCategory(@PathVariable("categoryId") UUID categoryId)
     {
-        categoryService.deleteCategory(categoryId, userDetails.getUserId());
+        categoryService.deleteCategory(categoryId);
         return ResponseEntity.ok(ResponseDto.of(ResponseCode.SUCC_CATEGORY_DELETE));
     }
 }

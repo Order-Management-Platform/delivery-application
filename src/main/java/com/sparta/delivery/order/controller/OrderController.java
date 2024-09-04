@@ -91,10 +91,7 @@ public class OrderController {
     // 주문 취소
     @PreAuthorize("hasRole('CUSTOMER') and @securityUtil.checkOrderOwnership(#orderId, authentication)")
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<ResponseDto> cancelOrder(
-            @PathVariable(name = "orderId") UUID orderId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-    ) {
-        return ResponseEntity.ok(orderService.cancelOrder(orderId, userDetails.getUserId()));
+    public ResponseEntity<ResponseDto> cancelOrder(@PathVariable(name = "orderId") UUID orderId) {
+        return ResponseEntity.ok(orderService.cancelOrder(orderId));
     }
 }

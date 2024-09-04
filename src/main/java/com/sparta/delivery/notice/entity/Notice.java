@@ -45,7 +45,5 @@ public class Notice extends BaseEntity {
         noticeAccess = updateNoticeRequest.getAccess();
     }
 
-    public void delete(UUID userId) {
-        this.markDeleted(userId);
-    }
+
 }

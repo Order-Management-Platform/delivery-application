@@ -119,7 +119,7 @@ public class OrderService {
 
     // 주문 취소 로직
     @Transactional
-    public ResponseDto cancelOrder(UUID orderId, UUID userId) {
+    public ResponseDto cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
                 new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
 
@@ -129,7 +129,7 @@ public class OrderService {
             throw new CustomBadRequestException(ResponseCode.ORDER_CANCEL_TIME_EXCEEDED);
         }
         paymentGatewayService.cancelPayment(orderId);
-        order.cancel(userId);
+        order.cancel();
         order.updateStatus(OrderStatus.CANCELLED);
         return ResponseDto.of(ResponseCode.SUCC_ORDER_CANCLE);
     }

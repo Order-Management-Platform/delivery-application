@@ -37,7 +37,4 @@ public class Category extends BaseEntity {
        this.name = name;
     }
 
-    public void delete(UUID userId) {
-        this.markDeleted(userId);
-    }
 }

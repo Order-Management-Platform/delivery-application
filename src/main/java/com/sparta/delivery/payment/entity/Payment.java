@@ -51,9 +51,6 @@ public class Payment extends BaseEntity {
         this.status = cancelStatus;
     }
 
-    public void delete(UUID userId) {
-        this.markDeleted(userId);
-    }
 
     public static Payment create(User user,UUID orderId, Long paymentAmount) {
         return Payment.builder()
