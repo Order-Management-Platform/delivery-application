@@ -4,8 +4,7 @@ import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
 import com.sparta.delivery.common.dto.ResponseSingleDto;
-import com.sparta.delivery.common.exception.CustomBadRequestException;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.order.dto.*;
 import com.sparta.delivery.order.entity.Order;
 import com.sparta.delivery.order.entity.OrderStatus;
@@ -58,9 +57,9 @@ public class OrderService {
     @Transactional
     public CreateOrderResponseDto createOrder(OrderRequestDto request, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                new BusinessException(ResponseCode.NOT_FOUND_USER));
         Store store = storeRepository.findById(request.getStoreId()).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                new BusinessException(ResponseCode.NOT_FOUND_STORE));
         Order createOrder = orderRepository.save(Order.create(request, user, store));
 
         for (OrderProductDto product : request.getProduct()) {
@@ -99,7 +98,7 @@ public class OrderService {
     // 주문 단건 조회 로직
     public ResponseSingleDto<OrderResponseDto> getFindByOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
+                new BusinessException(ResponseCode.NOT_FOUND_ORDER));
         List<OrderProductDto> products = order.getProductList().stream().map(orderProduct ->
                 OrderProductDto.of(orderProduct.getProductId(), orderProduct.getAmount(), orderProduct.getPrice())
         ).toList();
@@ -112,7 +111,7 @@ public class OrderService {
     @Transactional
     public ResponseDto updateOrderStatus(UpdateOrderRequestDto request) {
         Order order = orderRepository.findById(request.getOrderId()).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
+                new BusinessException(ResponseCode.NOT_FOUND_ORDER));
         order.updateStatus(request.getOrderStatus());
         return ResponseDto.of(ResponseCode.SUCC_ORDER_UPDATE_STATUS);
     }
@@ -121,12 +120,12 @@ public class OrderService {
     @Transactional
     public ResponseDto cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_ORDER));
+                new BusinessException(ResponseCode.NOT_FOUND_ORDER));
 
         // 현재 시간과 주문 생성 시간을 비교하여 5분이 지났는지 확인
         LocalDateTime currentTime = LocalDateTime.now();
         if (Duration.between(order.getCreatedAt(), currentTime).toMinutes() > 5) {
-            throw new CustomBadRequestException(ResponseCode.ORDER_CANCEL_TIME_EXCEEDED);
+            throw new BusinessException(ResponseCode.ORDER_CANCEL_TIME_EXCEEDED);
         }
         paymentGatewayService.cancelPayment(orderId);
         order.cancel();
@@ -148,7 +147,7 @@ public class OrderService {
                 .ifPresentOrElse(
                         product -> order.addProduct(create(order, productId, product.getPrice(), amount)),
                         () -> {
-                            throw new NotFoundException(ResponseCode.NOT_FOUND_STORE_PRODUCT);
+                            throw new BusinessException(ResponseCode.NOT_FOUND_STORE_PRODUCT);
                         }
                 );
     }
