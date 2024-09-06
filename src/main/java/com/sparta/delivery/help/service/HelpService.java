@@ -3,7 +3,7 @@ package com.sparta.delivery.help.service;
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.help.dto.HelpRequestDto;
 import com.sparta.delivery.help.dto.HelpResponseDto;
 import com.sparta.delivery.help.entity.Help;
@@ -33,7 +33,7 @@ public class HelpService {
     @Transactional
     public ResponseDto createHelp(UUID userId, HelpRequestDto request) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                new BusinessException(ResponseCode.NOT_FOUND_USER));
         helpRepository.save(create(user, request));
         return ResponseDto.of(ResponseCode.SUCC_HELP_CREATE);
     }
@@ -51,7 +51,7 @@ public class HelpService {
     // 유저 문의 전체 조회 로직
     public ResponsePageDto<HelpResponseDto> getUserHelp(int page, int size, String sort, boolean asc, UUID userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         Pageable pageable = createCustomPageable(page, size, sort, asc);
 
@@ -65,7 +65,7 @@ public class HelpService {
     @Transactional
     public ResponseDto updateHelp(UUID helpId, HelpRequestDto request) {
         Help help = helpRepository.findById(helpId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_HELP));
+                new BusinessException(ResponseCode.NOT_FOUND_HELP));
         String title = help.getTitle();
         String question = help.getQuestion();
         String answer = help.getAnswer();
@@ -86,7 +86,7 @@ public class HelpService {
     @Transactional
     public ResponseDto deleteHelp(UUID helpId) {
         Help help = helpRepository.findById(helpId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_HELP));
+                new BusinessException(ResponseCode.NOT_FOUND_HELP));
         help.delete();
         return ResponseDto.of(ResponseCode.SUCC_HELP_DELETE);
     }
