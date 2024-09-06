@@ -1,7 +1,7 @@
 package com.sparta.delivery.common.util;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.help.entity.Help;
 import com.sparta.delivery.help.repository.HelpRepository;
 import com.sparta.delivery.order.entity.Order;
@@ -112,10 +112,10 @@ public class SecurityUtil {
 
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         List<Store> storeList = storeRepository.findAllByUser(user);
-        if(storeList.isEmpty()) throw new NotFoundException(ResponseCode.NOT_FOUND_STORE);
+        if(storeList.isEmpty()) throw new BusinessException(ResponseCode.NOT_FOUND_STORE);
 
         boolean result = storeList.stream()
                 .anyMatch(store -> store.getId().equals(StoreId));
@@ -135,13 +135,13 @@ public class SecurityUtil {
 
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         List<Store> storeList = storeRepository.findAllByUser(user);
-        if(storeList.isEmpty()) throw new NotFoundException(ResponseCode.NOT_FOUND_STORE);
+        if(storeList.isEmpty()) throw new BusinessException(ResponseCode.NOT_FOUND_STORE);
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_PRODUCT));
 
         boolean result=storeList.stream()
                 .anyMatch(store -> store.getId().equals(product.getStore().getId()));
@@ -161,10 +161,10 @@ public class SecurityUtil {
 
         String email = authentication.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         List<Review> reviewList = reviewRepository.findByUser(user);
-        if(reviewList.isEmpty()) throw new NotFoundException(ResponseCode.NOT_FOUND_REVIEW);
+        if(reviewList.isEmpty()) throw new BusinessException(ResponseCode.NOT_FOUND_REVIEW);
 
         boolean result = reviewList.stream()
                 .anyMatch(review -> review.getId().equals(reviewId));
@@ -185,7 +185,7 @@ public class SecurityUtil {
             return true;
 
         Help help = helpRepository.findById(helpId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_HELP));
+                new BusinessException(ResponseCode.NOT_FOUND_HELP));
         UUID authenticatedUserId = ((UserDetailsImpl) authentication.getPrincipal()).getUserId();
 
         return authenticatedUserId.equals(help.getUser().getId());
