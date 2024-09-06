@@ -2,7 +2,7 @@ package com.sparta.delivery.region.service;
 
 import com.sparta.delivery.common.ResponseCode;
 import com.sparta.delivery.common.dto.ResponseDto;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.region.dto.RegionRequestDto;
 import com.sparta.delivery.region.dto.RegionResponseDto;
 import com.sparta.delivery.common.dto.ResponsePageDto;
@@ -49,17 +49,17 @@ public class RegionService {
     @Transactional
     public ResponseDto updateRegion(RegionRequestDto request) {
         Region region = regionRepository.findById(request.getRegionId()).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
+                new BusinessException(ResponseCode.NOT_FOUND_REGiON));
         region.update(request);
         return ResponseDto.of(ResponseCode.SUCC_REGION_UPDATE);
     }
 
     // 지역 삭제 로직
     @Transactional
-    public ResponseDto deleteRegion(UUID regionId, UUID userId) {
+    public ResponseDto deleteRegion(UUID regionId) {
         Region region = regionRepository.findById(regionId).orElseThrow(() ->
-                new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
-        region.delete(userId);
+                new BusinessException(ResponseCode.NOT_FOUND_REGiON));
+        region.delete();
         return ResponseDto.of(ResponseCode.SUCC_REGION_DELETE);
     }
 }
