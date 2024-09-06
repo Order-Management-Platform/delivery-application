@@ -17,19 +17,6 @@ public class ResponsePageDto<T> {
     private List<T> content;
     private CustomPage pageInfo;
 
-    // 삭제 예정
-    public static <T> ResponsePageDto<T> of(final int status, final String message, final Page<T> page) {
-        return ResponsePageDto.<T>builder()  // 제네릭 타입 명시
-                .status(status)
-                .message(message)
-                .content(page.getContent())
-                .pageInfo(CustomPage.fromPage(
-                        page.getPageable(),
-                        page.getTotalPages(),
-                        page.getTotalElements()
-                ))
-                .build();
-    }
 
     public static <T> ResponsePageDto<T> of(ResponseCode resCode,final Page<T> page) {
         return ResponsePageDto.<T>builder()  // 제네릭 타입 명시

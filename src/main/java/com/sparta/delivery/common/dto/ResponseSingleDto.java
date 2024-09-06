@@ -13,14 +13,6 @@ public class ResponseSingleDto<T> {
     private String message;
     private T content;
 
-    //todo : enum파라미터 생성자로 대체
-    public static <T> ResponseSingleDto<T> of(final int status, final String message, final T content) {
-        return ResponseSingleDto.<T>builder()
-                .status(status)
-                .message(message)
-                .content(content)
-                .build();
-    }
 
     public static <T> ResponseSingleDto<T> of(ResponseCode resCode, final T content) {
         return ResponseSingleDto.<T>builder()

@@ -11,12 +11,6 @@ public class ResponseDto {
     private int status;
     private String message;
 
-    public static ResponseDto of(final int status, final String message) {
-        return ResponseDto.builder()
-                .status(status)
-                .message(message)
-                .build();
-    }
 
     public static ResponseDto of(ResponseCode resCode) {
         return ResponseDto.builder()
