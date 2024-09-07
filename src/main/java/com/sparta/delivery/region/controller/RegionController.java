@@ -55,11 +55,8 @@ public class RegionController {
     // 지역 삭제
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{regionId}")
-    public ResponseEntity<ResponseDto> deleteRegion(
-            @PathVariable(name = "regionId") UUID regionId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails
-            ) {
-        ResponseDto response = regionService.deleteRegion(regionId, userDetails.getUserId());
+    public ResponseEntity<ResponseDto> deleteRegion(@PathVariable(name = "regionId") UUID regionId) {
+        ResponseDto response = regionService.deleteRegion(regionId);
         return ResponseEntity.ok(response);
     }
 }

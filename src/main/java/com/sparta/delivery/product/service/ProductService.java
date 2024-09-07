@@ -1,7 +1,7 @@
 package com.sparta.delivery.product.service;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.product.dto.ProductCreateRequestDto;
 import com.sparta.delivery.product.dto.ProductListResponseDto;
 import com.sparta.delivery.product.dto.ProductModifyRequestDto;
@@ -35,7 +35,7 @@ public class ProductService {
     //상품 생성
     public void createProduct(ProductCreateRequestDto dto,UUID storeId) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_PRODUCT));
 
         Product product = Product.builder()
                 .name(dto.getName())
@@ -50,7 +50,7 @@ public class ProductService {
     //가게 내 상품 조회
     public  Page<ProductListResponseDto> getStoreProductList(UUID storeId,String keyWord, Pageable pageable) {
         storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_STORE));
         Page<Product> product = productRepository.findAllByStoreIdAndNameContaining(storeId,keyWord, pageable);
         return product.map(ProductListResponseDto::of);
     }
@@ -58,7 +58,7 @@ public class ProductService {
     //상품 상세 조회
     public ProductResponseDto getProduct(UUID productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_PRODUCT));
         return ProductResponseDto.of(product);
     }
 
@@ -66,7 +66,7 @@ public class ProductService {
     @Transactional
     public void modifyProduct(UUID productId, ProductModifyRequestDto dto) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_PRODUCT));
         product.modify(dto);
         productRepository.save(product);
     }
@@ -75,7 +75,7 @@ public class ProductService {
     @Transactional
     public void modifyProductStatus(UUID productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_PRODUCT));
         productRepository.modifyStatus(productId,!product.getSoldOut());
     }
 
@@ -83,7 +83,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(UUID productId) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_PRODUCT));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_PRODUCT));
         product.delete();
     }
 
