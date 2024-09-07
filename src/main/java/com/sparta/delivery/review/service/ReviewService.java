@@ -1,7 +1,7 @@
 package com.sparta.delivery.review.service;
 
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.review.entity.Review;
 import com.sparta.delivery.review.dto.ReviewCreateRequestDto;
 import com.sparta.delivery.review.dto.ReviewListResponseDto;
@@ -33,9 +33,9 @@ public class ReviewService {
     @Transactional
     public void createReview(ReviewCreateRequestDto dto, Principal principal) {
         Store store = storeRepository.findById(dto.getStoreId())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_STORE));
         User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_USER));
         //사용자 리뷰 생성
         Review review = Review.builder()
                 .store(store)
@@ -61,7 +61,7 @@ public class ReviewService {
     @Transactional
     public Page<ReviewListResponseDto> getReviewList(UUID storeId,Pageable pageable) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_STORE));
         Page<Review> review = reviewRepository.findAllByStore(store, pageable);
         return review.map(ReviewListResponseDto::of);
     }
@@ -71,7 +71,7 @@ public class ReviewService {
     @Transactional
     public void modifyreview(UUID reviewId, ReviewModifyRequestDto dto) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_REVIEW));
         review.modify(dto);
         reviewRepository.save(review);
 
@@ -81,7 +81,7 @@ public class ReviewService {
     @Transactional
     public void deleteReview(UUID reviewId) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_REVIEW));
         review.delete();
     }
 
@@ -89,7 +89,7 @@ public class ReviewService {
     @Transactional
     public void ReportReview(UUID reviewId, String content) {
         Review review = reviewRepository.findById(reviewId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_REVIEW));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_REVIEW));
 
         review.declaration(content);
     }

@@ -3,8 +3,7 @@ package com.sparta.delivery.store.service;
 import com.sparta.delivery.category.entity.Category;
 import com.sparta.delivery.category.repository.CategoryRepository;
 import com.sparta.delivery.common.ResponseCode;
-import com.sparta.delivery.common.dto.ResponseSingleDto;
-import com.sparta.delivery.common.exception.NotFoundException;
+import com.sparta.delivery.common.exception.BusinessException;
 import com.sparta.delivery.region.entity.Region;
 import com.sparta.delivery.region.repository.RegionRepository;
 import com.sparta.delivery.store.dto.StoreGetResponseDto;
@@ -39,7 +38,7 @@ public class StoreService {
     //음식점 생성
     public void createStore(UUID userId, Map<String,String> map) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_USER));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_USER));
 
         Store store = Store.builder()
                 .name(map.get("name"))
@@ -59,7 +58,7 @@ public class StoreService {
     public List<StoreListResponseDto> getOwnerStoreList(Principal principal) {
         String email = principal.getName();
         User user = userRepository.findByEmail(email)
-                .orElseThrow(()->new NotFoundException("사용자를 찾을 수 없습니다."));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_USER));
         List<Store> storelist=storeRepository.findAllByUser(user);
         return storelist.stream().map(StoreListResponseDto::of)
                 .collect(Collectors.toList());
@@ -68,7 +67,7 @@ public class StoreService {
     //음식점 상세 조회
     public StoreGetResponseDto getStore(UUID storeId) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_STORE));
         return StoreGetResponseDto.of(store);
     }
 
@@ -77,11 +76,11 @@ public class StoreService {
     @Transactional
     public void modifyStore(UUID storeId, StoreModifyRequestDto dto) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_STORE));
         Category category = categoryRepository.findById(dto.getCategoryId())
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_CATEGORY));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_CATEGORY));
         Region region = regionRepository.findById(dto.getRegionId())
-                .orElseThrow(()->new NotFoundException(ResponseCode.NOT_FOUND_REGiON));
+                .orElseThrow(()->new BusinessException(ResponseCode.NOT_FOUND_REGiON));
 
         store.modify(dto, category, region);
 //        storeRepository.save(store);
@@ -90,7 +89,7 @@ public class StoreService {
     //음식점 삭제
     public void deleteStore(UUID storeId) {
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new NotFoundException(ResponseCode.NOT_FOUND_STORE));
+                .orElseThrow(() -> new BusinessException(ResponseCode.NOT_FOUND_STORE));
         store.delete();
     }
 
