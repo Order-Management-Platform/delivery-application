@@ -44,7 +44,10 @@ public class BaseEntity {
     private UUID deletedBy;
 
     public void delete() {
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.
+                getContext().
+                getAuthentication().
+                getPrincipal();
         this.deletedBy = userDetails.getUserId();
         this.deletedAt = LocalDateTime.now();
     }
